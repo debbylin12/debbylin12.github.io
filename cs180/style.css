@@ -172,87 +172,6 @@ figcaption{
 }
 
 
-/* 小尺寸容器 / 固定尺寸辅助类 */
-.figure-narrow{ max-width: 350px; margin: 0 auto; }
-.img-sm{ max-width: 420px; width: 100%; display: block; margin: 0 auto; }
-.img-fixed { width: 375px; height: 500px; object-fit: cover; display: block; margin: 0 auto; border-radius: 8px; }
-.same-height {
-  height: 100%;
-  width: auto;
-  max-height: 400px;
-  display: block;   /* img 变成块级元素 */
-  margin: 0 auto;   /* 水平自动外边距 = 居中 */
-}
-
-/* 两图并排的小网格（输入/输出） */
-.tile-io { padding: 8px; }
-.io {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  align-items: start;
-}
-.io img {
-  width: 100%;
-  display: block;
-  border-radius: 6px;
-}
-
-/* 更紧凑的参数框 */
-.meta-box.compact {
-  margin-top: 6px;
-  padding: 8px 10px;
-}
-.meta-box.compact .kv { padding: 3px 0; }
-
-.grid4 {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.tile {
-  background: #fff;
-  border: 1px solid rgba(0,0,0,.08);
-  border-radius: 10px;
-  padding: 8px;
-  text-align: center;
-}
-
-.tile img {
-  max-width: 100%;
-  border-radius: 6px;
-  display: block;
-  margin: 0 auto 6px;
-}
-
-.tile figcaption {
-  font-size: 0.85rem;
-  line-height: 1.3;
-}
-
-
-/* ===== 高亮提示块 ===== */
-.note{
-  margin-top:14px; padding:12px 14px; border-radius:12px;
-  background:linear-gradient(145deg, #fff, var(--brand-3));
-  border:1px solid rgba(0,0,0,.06); color:#334155; font-size:14px;
-}
-
-/* ===== 表格（结果/Offset用） ===== */
-.tbl{width:100%; border-collapse: collapse; font-size:14px}
-.tbl th,.tbl td{border:1px solid rgba(0,0,0,.08); padding:10px 12px; text-align:left}
-.tbl thead th{background: linear-gradient(180deg,#fff, #f5f7fb); color:#0f172a}
-.tbl tbody tr:hover{background:#fafcff}
-
-/* ===== 页脚 ===== */
-.footer{
-  text-align:center; color:var(--body);
-  padding: 28px 16px 40px;
-}
-.footer a{color:#0f172a; text-decoration:none; border-bottom:1px dashed rgba(15,23,42,.3)}
-.footer a:hover{border-bottom-color:#0f172a}
-
 /* ===== lightbox ===== */
 .lightbox {
   display: none; 
@@ -272,9 +191,4 @@ figcaption{
   max-height: 88vh; 
   border-radius: 12px; 
   box-shadow: 0 20px 80px rgba(0,0,0,.5);
-}
-
-/* ===== Optimize Printing ===== */
-@media print{
-  section.card{ box-shadow:none; border: 1px solid #ddd; page-break-inside: avoid; }
 }
