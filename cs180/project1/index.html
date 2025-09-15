@@ -1,16 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 1</title>
+    <link rel="stylesheet" href="../style.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        img {
+            max-width: 100%;
+            max-height: 100%;
         }
     </style>
 </head>
+
 <body>
-    <h1>Project 1</h1>
-    
+    <header class="autumn">
+        <div class="autumn_inner">
+            <h1>Project 1: Images of the Russian Empire</h1>
+            <h2>Colorizing the Prokudin-Gorskii photo collection</h2>
+        </div>
+    </header>
+    <main class="wrap">
+        <section class="card" id="overview">
+            <h2>Overview</h2>
+            <p class="sub">
+                The goal for this project is to take the digitized <a href="https://www.loc.gov/collections/prokudin-gorskii/">Prokudin-Gorskii</a>
+                image which contains same images through Blue, Green, and Red glass plates (from to to bottom), put them on top of each other and 
+                form a single colorful RGB image. There might be tiny displacement among each frame, the key of this project is to detect the 
+                displacement in a smart and fast way.
+            </p>
+            <div class="grid">
+                <div class="col-2">
+                    <a href="#img1">
+                    <figure>
+                        <img src="./media/emir.jpg" alt="Original BGR plate" data-lightbox>
+                    </figure>
+                    </a>
+                    <div id="img1" class="lightbox">
+                        <a href="#">&times;</a>
+                        <img src="./media/emir.jpg" alt="Full Image">
+                    </div>
+                    <figcaption>Original 3-channel (BGR) plate</figcaption>
+                </div>
+                <div class="col-5">
+                    <figure>
+                        <img src="./media/emir_misaligned.jpg" alt="Colorized without alignment" data-lightbox>
+                    </figure>
+                    <figcaption>Colorized image without displacement adjustment</figcaption>
+                </div>
+                <div class="col-5">
+                    <figure>
+                        <img src="./out/emir_out.jpg" alt="Colorized with alignment" data-lightbox>
+                    </figure>
+                    <figcaption>Colorized image with displacement adjustment</figcaption>
+                </div>
+            </div>
+        </section>
+        <section class="card" id="single">
+            <h2>Single-Scale Alignment</h2>
+            <p>
+                Two different methods Euclidean Distance (sqrt dropped) (SSD) and Normalized Cross-Correlation (NCC) are used to calculate the similarity. Use B-channel as the base map, calculate the SSD and NCC for each image of G and R channels shifts along x and y axises in range [-15, 15], find the shifted image with smallest SSD or largest CCD for G vs. B and R vs. B.
+            </p>
+        </section>
+    </main>
 </body>
 </html>
