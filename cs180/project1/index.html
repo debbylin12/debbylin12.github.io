@@ -14,6 +14,11 @@
 </head>
 
 <body>
+    <header class="sticky_header">
+        <div class="autumn">
+            <h1>CS 180 Project 1</h1>
+        </div>   
+    </header>
     <header class="autumn">
         <div class="autumn_inner">
             <h1>Project 1: Images of the Russian Empire</h1>
@@ -23,45 +28,243 @@
     <main class="wrap">
         <section class="card" id="overview">
             <h2>Overview</h2>
+            <hr>
             <p class="sub">
-                The goal for this project is to take the digitized <a href="https://www.loc.gov/collections/prokudin-gorskii/">Prokudin-Gorskii</a>
-                image which contains same images through Blue, Green, and Red glass plates (from to to bottom), put them on top of each other and 
-                form a single colorful RGB image. There might be tiny displacement among each frame, the key of this project is to detect the 
-                displacement in a smart and fast way.
+                The goal for this project is to take the digitized 
+                <a href="https://www.loc.gov/collections/prokudin-gorskii/">Prokudin-Gorskii</a>
+                image which contains same images through Blue, Green, and Red glass plates (from to to bottom), 
+                put them on top of each other and form a single colorful RGB image. There might be tiny 
+                displacement among each frame, the key of this project is to detect the displacement 
+                in a smart and fast way.
             </p>
             <div class="grid">
                 <div class="col-2">
-                    <a href="#img1">
                     <figure>
                         <img src="./media/emir.jpg" alt="Original BGR plate" data-lightbox>
+                        <figcaption>B-G-R plates</figcaption>
                     </figure>
-                    </a>
-                    <div id="img1" class="lightbox">
-                        <a href="#">&times;</a>
-                        <img src="./media/emir.jpg" alt="Full Image">
-                    </div>
-                    <figcaption>Original 3-channel (BGR) plate</figcaption>
                 </div>
                 <div class="col-5">
                     <figure>
                         <img src="./media/emir_misaligned.jpg" alt="Colorized without alignment" data-lightbox>
+                        <figcaption>Colorized image without displacement adjustment</figcaption>
                     </figure>
-                    <figcaption>Colorized image without displacement adjustment</figcaption>
                 </div>
                 <div class="col-5">
                     <figure>
                         <img src="./out/emir_out.jpg" alt="Colorized with alignment" data-lightbox>
+                        <figcaption>Colorized image with displacement adjustment</figcaption>
                     </figure>
-                    <figcaption>Colorized image with displacement adjustment</figcaption>
                 </div>
             </div>
         </section>
-        <section class="card" id="single">
+
+        <section class="card" id="single-scale">
             <h2>Single-Scale Alignment</h2>
-            <p>
-                Two different methods Euclidean Distance (sqrt dropped) (SSD) and Normalized Cross-Correlation (NCC) are used to calculate the similarity. Use B-channel as the base map, calculate the SSD and NCC for each image of G and R channels shifts along x and y axises in range [-15, 15], find the shifted image with smallest SSD or largest CCD for G vs. B and R vs. B.
+            <hr>
+            <p class="sub">
+                Two different methods <strong>Euclidean Distance (SSD)</strong> and 
+                <strong>Normalized Cross-Correlation (NCC)</strong> are used to calculate the similarity. 
+                Use B-channel as the base map, calculate the SSD and NCC for G and R channels with respect to B 
+                within a shifting window [-15, 15] along both x and y axises. Then search for the best fit offsets
+                for G and R channels. Notice that the black edges around the images are not distributed evenly, 
+                which might hurt the calculation, therefore I cropped out 10% of the border before doing calculation. 
             </p>
+            <figure>
+                <img src="./media/single_align_ssd.png" alt="Single-scale alignment (SSD)" style="cursor: auto">
+            </figure>
+            <figure>
+                <img src="./media/single_align_ncc.png" alt="Single-scale alignment (NCC)" style="cursor: auto">
+            </figure>
+        </section>
+
+        <section class="card" id="multi-scale">
+            <h2>Multi-scale Alignment</h2>
+            <hr>
+            <p class="sub">
+                Doing calculation on single scale works well on small images ending with <code>".jpg"</code>, 
+                but takes exteme long run time for larger images ending with <code>".tif"</code>, and requires 
+                very large window size. Therefore, a faster and more efficiency search procedure, 
+                <strong>Image Pyramid</strong>, is implemented:
+            </p>
+            <div class="container">
+                <div style="flex:80%">
+                    <ol class="sub">
+                        <li>Build a gaussian pyramid to downsample the image (by factor of 2 at each level)</li>
+                        <li>Do sigle-scale similarity search on the coarsest scale (downsample until height and width < 200)</li>
+                        <li>Propagate to next level, double the resulted offset from previouse level</li>
+                        <li>Fine adjust the doubled offset in a small window [-5, 5]</li>
+                        <li>Repeat until the bottom of the pyramid</li>
+                    </ol>
+                </div>
+                <div style="flex:20%">
+                    <figure>
+                        <img src="./media/Image_pyramid.svg.png" alt="Image pyramid" data-lightbox>
+                    </figure>
+                </div>
+            </div>
+            
+            <p class="sub">
+                Notice that the brightness of each color channel at the same position can be very different. 
+                For example, for color like pure blue. The value on blue scale (B channel) is very close to 1 
+                (shown as bright/white in grayscale), but same position for G and R in contrast will be very close to 0 
+                (shown as while in grayscale), the normal similarity calculation thus cannot match the positions well. 
+            </p>
+            <p class="sub">
+                Instead of calculate similarity on raw RBG images, I chose to calculate similarity on images that represent
+                the edges (the transition between different shapes/color). To find the edge map, 
+                <strong>Sobel Edge Dectection</strong> is implemented:
+            </p>
+            <div class="container">
+                <div style="flex:60%">
+                    <ol class="sub">
+                        <li>Do image convolution with two <a href=https://en.wikipedia.org/wiki/Sobel_operator> Sobel filters </a> 
+                            as kernel to compute the intensity changes in both horizontal (x-direction) and vertical (y-direction) axes, 
+                            revealing areas with rapid intensity variations, which typically correspond to object edges. </li>
+                        <li>Calculate the gradient magnitude from x and y directions, determine the likelihood and orientation of an edge</li>
+                        <li>Choose NCC rather than SSD as similarity aligorithmn, because SSD compares pixel values directly, 
+                            while NCC compares the pattern/shape of edges, normalized for scale. SSD can change a lot when rescaling or 
+                            shifting brightness, while Normalized Cross-Correlation can stay the same.
+                        </li>
+                    </ol>
+                </div>
+                <div style="flex:30%">
+                    <figure>
+                        <img src="./media/emir_edge.jpg" alt="example edge map" data-lightbox>
+                        <figcaption>Edge map example</figcaption>
+                    </figure>
+                </div>
+            </div>
+            
+        </section>
+
+        <section class="card">
+            <h2>Results</h2>
+            <hr>
+            <h3>Examples from class</h3>
+            <div class="grid">
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/cathedral_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>cathedral.jpg</strong><br>
+                            G: (5, 2), R: (12, 3)
+                        </figcaption>
+                    </figure>
+                </div>
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/monastery_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>monastery.jpg</strong><br>
+                            G: (-3, 2), R: (3, 2)
+                        </figcaption>
+                    </figure>
+                </div>
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/tobolsk_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>tobolsk.jpg</strong><br>
+                            G: (3, 3), R: (6, 3)
+                        </figcaption>
+                    </figure>
+                </div>
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/emir_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>emir.tif</strong><br>
+                            G: (49, 24), R: (107, 40)
+                        </figcaption>
+                    </figure>
+                </div>
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/italil_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>italil.tif</strong><br>
+                            G:(38, 22), R:(77, 36)
+                        </figcaption>
+                    </figure>
+                </div>
+
+                <div class="col-3">
+                    <figure>
+                        <img src="./out/three_generations_out.jpg" alt="emir" data-lightbox>
+                        <figcaption>
+                            <strong>three_generations.tif</strong><br>
+                            G:(54, 12), R:(111, 9)
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+            <h3>Examples my own choice</h3>
+            <div class="grid">
+
+            </div>
         </section>
     </main>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+<!--Lightbox-->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
+    <img alt="" id="lb-img" style="display:none">
+    <video id="lb-video" style="display:none" controls></video>
+</div>
+
+<!--Lightbox script (reused)-->
+<script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbVideo = document.getElementById('lb-video');
+
+    function openLightbox(el) {
+        const isVideo = el.tagName.toLowerCase() === 'video' || (el.src && el.src.endsWith('.mp4'));
+        lb.classList.add('open');
+
+        if (isVideo) {
+        lbVideo.src = el.src;
+        lbVideo.style.display = 'block';
+        lbImg.style.display = 'none';
+        } else {
+        lbImg.src = el.src;
+        lbImg.alt = el.alt || '';
+        lbImg.style.display = 'block';
+        lbVideo.style.display = 'none';
+        }
+        lb.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+        lb.classList.remove('open');
+        lbImg.src = '';
+        lbVideo.pause();
+        lbVideo.removeAttribute('src');
+        lb.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('click', e => {
+        const t = e.target;
+        if (t.matches('[data-lightbox]')) {
+        openLightbox(t);
+        } else if (t.id === 'lightbox') {
+        closeLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lb.classList.contains('open')) {
+        closeLightbox();
+        }
+    });
+</script>
