@@ -1,20 +1,20 @@
 im_name G_displacement R_displacement
-emir.tif [49 24] [107  40]
-italil.tif [38 22] [77 36]
-monastery.jpg [-3  2] [3 2]
-church.tif [25  4] [58 -4]
-three_generations.tif [54 12] [111   9]
-test_military.tif [34 10] [124  17]
-lugano.tif [ 41 -17] [ 92 -29]
-melons.tif [80 10] [177  13]
-test_sobor.tif [41 15] [91 25]
-test_dalmatovo.tif [ 72 -15] [147 -32]
-lastochikino.tif [-3 -2] [76 -8]
-tobolsk.jpg [3 3] [6 3]
-icon.tif [42 17] [90 23]
-cathedral.jpg [5 2] [12  3]
-test_vodopad.tif [13 -1] [79 -2]
-siren.tif [49 -6] [ 96 -24]
-self_portrait.tif [78 29] [176  37]
-harvesters.tif [60 17] [124  14]
-test_krestlanskiia.tif [-13   9] [12 15]
+cathedral.jpg  G: (5, 2), R: (12, 3)
+church.tif  G: (25, 4), R: (58, -4)
+emir.tif  G: (49, 24), R: (107, 40)
+harvesters.tif  G: (60, 17), R: (124, 14)
+icon.tif  G: (42, 17), R: (90, 23)
+italil.tif  G: (38, 22), R: (77, 36)
+lastochikino.tif  G: (-3, -2), R: (76, -8)
+lugano.tif  G: (41, -17), R: (92, -29)
+melons.tif  G: (80, 10), R: (177, 13)
+monastery.jpg  G: (-3, 2), R: (3, 2)
+self_portrait.tif  G: (78, 29), R: (176, 37)
+siren.tif  G: (49, -6), R: (96, -24)
+test_dalmatovo.tif  G: (72, -15), R: (147, -32)
+test_krestlanskiia.tif  G: (-13, 9), R: (12, 15)
+test_military.tif  G: (34, 10), R: (124, 17)
+test_sobor.tif  G: (41, 15), R: (91, 25)
+test_vodopad.tif  G: (13, -1), R: (79, -2)
+three_generations.tif  G: (54, 12), R: (111, 9)
+tobolsk.jpg  G: (3, 3), R: (6, 3)

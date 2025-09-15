@@ -92,11 +92,20 @@ section.card {
   letter-spacing:.2px;
 }
 .sticky_header{
+  background: linear-gradient(120deg, var(--brand-1), var(--brand-2) 120%);
+  box-shadow: 0 0 10px var(--shadow);
   position: sticky;
+  width: 100%;
   top: 0;
   margin: 0;
-  padding: 10px;
-  z-index: 100
+  padding: 1px 40px;
+  z-index: 100;
+}
+.sticky_header h1 {
+  color: var(--title);
+  font-size: 20px;
+  margin: 25px 0; 
+  letter-spacing:.2px;
 }
 .meta {
   margin-top: 14px;
@@ -248,7 +257,7 @@ figcaption{
 .lightbox {
   display: none; 
   position: fixed;  
-  z-index: 99;
+  z-index: 101;
   inset: 0; 
   background: rgba(0,0,0,.65);
   padding:20px; 
@@ -265,12 +274,7 @@ figcaption{
   box-shadow: 0 20px 80px rgba(0,0,0,.5);
 }
 
-/* ===== 打印优化 ===== */
+/* ===== Optimize Printing ===== */
 @media print{
-  .hero, .tabs{box-shadow:none; background:#fff}
-  .tab, .meta{display:none}
-  body{background:#fff}
   section.card{ box-shadow:none; border: 1px solid #ddd; page-break-inside: avoid; }
-  .footer{color:#333; border-top:1px solid #ddd}
-  a[href]::after{content:" (" attr(href) ")"; font-size:12px; color:#555}
 }
