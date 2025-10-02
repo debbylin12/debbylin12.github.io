@@ -22,764 +22,727 @@
         </div>
     </header>
 
-    <main class="wrap">
-        <section class="card" id="part 1.1">
-            <h2>Part 1.1: Convolutions from Scratch!</h2>
-            <hr>
-            <p class="sub">
-                The goal of this part is to implement convolution between a 2D image and 2D kernel. With <code>numpy</code>, 
-                I impelemented the convolution in two methods below, with four for-loops (left), and with two for-loops (right).
-                The image array are padded with zeros at boundaries to reserve the same shape.
-            </p>            
-            <div class="grid" style="margin-top: -20px;">
-                <div class="col-6" style="padding:0 10px 0 0">
-                    <pre>
-                        <div class="code_container">
+    <div class="main_container">
+        <div class="sidebar">
+            <h2>Content</h2>
+            <h3>Part 1</h3>
+            <a href="#part 1.1">Convolutions from Scratch!</a>
+            <a href="#part 1.2">Finite Difference Operator</a>
+            <a href="#part 1.3">Derivative of Gaussian (DoG) Filter</a>
+            <h3>Part 2</h3>
+            <a href="#part 2.1">Image "Sharpening"</a>
+            <a href="#part 2.2">Hybrid Images</a>
+            <a href="#part 2.3">Gaussian and Laplacian Stacks</a>
+            <a href="#part 2.4">Multiresolution Blending (a.k.a. the oraple!)</a>
+        </div>
+        <main class="wrap" style="max-width: 80%;">
+            <section class="card" id="part 1.1">
+                <h2>Part 1.1: Convolutions from Scratch!</h2>
+                <hr>
+                <p class="sub">
+                    The goal of this part is to implement convolution between a 2D image and 2D kernel. With <code>numpy</code>, 
+                    I impelemented the convolution in two methods below, with four for-loops (left), and with two for-loops (right).
+                    The image array are padded with zeros at boundaries to reserve the same shape.
+                </p>            
+                <div class="grid" style="gap:30px; padding-bottom: 20px;">
+                    <div class="col-6">
+                        <div class="code_container" style="height: 450px">
                             <div class="code_header">python</div>
-                            <div class="code_box"><code class="language-python">
-def convolution_four_loops(img, kernel):
-"""
-Implement 2D convolution with four loops, padding with zeros.
-    img - 2D array;
-    kernel - 2D (h x w) array, h and w must be odd number;
-"""
-kh, kw = kernel.shape[0] // 2, kernel.shape[1] // 2
-
-# Padding with zeros
-padded = np.pad(img, ((kh,), (kw,)), mode='constant')
-
-h, w = padded.shape
-out = np.zeros_like(img, dtype=np.float32)
-
-for i in range(kh, h-kh):
-    for j in range(kw, w-kw):
-        cum = 0
-        for u in range(-kh, kh+1):
-            for v in range(-kw, kw+1):
-                cum += kernel[u+kh, v+kw] * padded[i-u, j-v]
-        out[i-kh, j-kw] = cum
-        
-return out
-                            </code></div>
+                            <iframe src="convolution_four_loops.html"></iframe>
                         </div>
-                    </pre>
-                </div>
-                <div class="col-6">
-                    <pre>
-                        <div class="code_container">
+                    </div>
+                    <div class="col-6">
+                        <div class="code_container" style="height: 450px">
                             <div class="code_header">python</div>
-                            <div class="code_box"><code class="language-python">
-def convolution_two_loops(img, kernel):
-"""
-Implement 2D convolution with two loops, padding with zeros.
-    img - 2D array;
-    kernel - 2D (h x w) array, h and w must be odd number;
-"""
-kh, kw = kernel.shape[0] // 2, kernel.shape[1] // 2
-
-# Padding with zeros
-padded = np.pad(img, ((kh,), (kw,)), mode='constant')
-
-h, w = padded.shape
-out = np.zeros_like(img, dtype=np.float32)
-
-for i in range(kh, h-kh):
-    for j in range(kw, w-kw):
-        cropped = padded[i-kh:i+kh+1, j-kw:j+kw+1]
-        out[i-kh, j-kw] = np.sum(cropped * np.flip(kernel))
-        
-return out
-
-
-
-                            </code></div>
+                            <iframe src="convolution_two_loops.html"></iframe>
                         </div>
-                    </pre>
+                    </div>
                 </div>
-            </div>
-            <hr>
-            <p class="sub">
-                To compare my two methods and the built-in function 
-                <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve2d.html"> 
-                <code>scipy.signal.convolve2d</code></a><code>(mode='same', boundary='fill', fillvalue=0)</code>,  
-                I convolve a picture of myself with 9x9 average matrix (all elements are 1/81).
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/my_picture.JPG" alt="My picture" data-lightbox>
-                        <figcaption>
-                            <strong>My picture</strong><br>
-                            <br>
-                        </figcaption>
-                    </figure>
+                <hr>
+                <p class="sub">
+                    To compare my two methods and the built-in function 
+                    <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.convolve2d.html"> 
+                    <code>scipy.signal.convolve2d</code></a><code> (mode='same', boundary='fill', fillvalue=0)</code>,  
+                    I convolve a picture of myself with 9x9 average matrix (all elements are 1/81).
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/my_picture.JPG" alt="My picture" data-lightbox>
+                            <figcaption>
+                                <strong>My picture</strong><br>
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_1_four_loop_box_filter.jpg" alt="Convolve with four loops (9x9 filter)" data-lightbox>
+                            <figcaption>
+                                <strong>four loops</strong><br>
+                                Rutime: 85.4961 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_1_two_loop_box_filter.jpg" alt="Convolve with two loops (9x9 filter)" data-lightbox>
+                            <figcaption>
+                                <strong>two loops</strong><br>
+                                Rutime: 14.1859 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_1_scipy_box_filter.jpg" alt="Convolve with scipy (9x9 filter)" data-lightbox>
+                            <figcaption>
+                                <strong>scipy</strong><br>
+                                Rutime: 0.3723 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_1_four_loop_box_filter.jpg" alt="Convolve with four loops (9x9 filter)" data-lightbox>
-                        <figcaption>
-                            <strong>four loops</strong><br>
-                            Rutime: 85.4961 seconds
-                        </figcaption>
-                    </figure>
+                <hr>
+                <p class="sub">
+                    Convolve my picture with <strong>D<sub>x</sub></strong> = [[1, 0, -1]]:
+                </p>
+                <div class="grid" style="margin:-20px 0 20px">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_four_loop_dx.jpg" alt="Convolve with four loops (Dx)" data-lightbox>
+                            <figcaption>
+                                <strong>four loops</strong><br>
+                                Rutime:  5.4698 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_two_loop_dx.jpg" alt="Convolve with two loops (Dx)" data-lightbox>
+                            <figcaption>
+                                <strong>two loops</strong><br>
+                                Rutime: 13.9344 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_scipy_dx.jpg" alt="Convolve with scipy (Dx)" data-lightbox>
+                            <figcaption>
+                                <strong>scipy</strong><br>
+                                Rutime: 0.0368 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_1_two_loop_box_filter.jpg" alt="Convolve with two loops (9x9 filter)" data-lightbox>
-                        <figcaption>
-                            <strong>two loops</strong><br>
-                            Rutime: 14.1859 seconds
-                        </figcaption>
-                    </figure>
+                <hr>
+                <p class="sub">
+                    Convolve my picture with <strong>D<sub>y</sub></strong> = [[1], [0], [-1]]:
+                </p>
+                <div class="grid" style="margin:-20px 0 20px">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_four_loop_dy.jpg" alt="Convolve with four loops (Dy)" data-lightbox>
+                            <figcaption>
+                                <strong>four loops</strong><br>
+                                Rutime:  6.8227 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_two_loop_dy.jpg" alt="Convolve with two loops (Dy)" data-lightbox>
+                            <figcaption>
+                                <strong>two loops</strong><br>
+                                Rutime: 14.0191 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p1_1_scipy_dy.jpg" alt="Convolve with scipy (Dy)" data-lightbox>
+                            <figcaption>
+                                <strong>scipy</strong><br>
+                                Rutime: 0.0520 seconds
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_1_scipy_box_filter.jpg" alt="Convolve with scipy (9x9 filter)" data-lightbox>
-                        <figcaption>
-                            <strong>scipy</strong><br>
-                            Rutime: 0.3723 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                Convolve my picture with <strong>D<sub>x</sub></strong> = [[1, 0, -1]]:
-            </p>
-            <div class="grid" style="margin:-20px 0 20px">
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_four_loop_dx.jpg" alt="Convolve with four loops (Dx)" data-lightbox>
-                        <figcaption>
-                            <strong>four loops</strong><br>
-                            Rutime:  5.4698 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_two_loop_dx.jpg" alt="Convolve with two loops (Dx)" data-lightbox>
-                        <figcaption>
-                            <strong>two loops</strong><br>
-                            Rutime: 13.9344 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_scipy_dx.jpg" alt="Convolve with scipy (Dx)" data-lightbox>
-                        <figcaption>
-                            <strong>scipy</strong><br>
-                            Rutime: 0.0368 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                Convolve my picture with <strong>D<sub>y</sub></strong> = [[1], [0], [-1]]:
-            </p>
-            <div class="grid" style="margin:-20px 0 20px">
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_four_loop_dy.jpg" alt="Convolve with four loops (Dy)" data-lightbox>
-                        <figcaption>
-                            <strong>four loops</strong><br>
-                            Rutime:  6.8227 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_two_loop_dy.jpg" alt="Convolve with two loops (Dy)" data-lightbox>
-                        <figcaption>
-                            <strong>two loops</strong><br>
-                            Rutime: 14.0191 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p1_1_scipy_dy.jpg" alt="Convolve with scipy (Dy)" data-lightbox>
-                        <figcaption>
-                            <strong>scipy</strong><br>
-                            Rutime: 0.0520 seconds
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                It is obvious to see that the runtime for <code>convolution_four_loops</code> increases when  
-                filter kernel size increases a lot, while the runtime of <code>convolution_two_loops</code> seems to 
-                stays the same (at around 14 seconds). Therefore, when the kernel size is small, my 
-                <code>convolution_four_loops</code> has a shorter runtime than my <code>convolution_two_loops</code>; 
-                when the kernel size is large, my <code>convolution_four_loops</code> has a longer runtime than my 
-                <code>convolution_two_loops</code>. However, both of my two functions (1s-10s scale) are way slower than 
-                <code>scipy.signal.convolve2d</code> (0.01s-0.1s scale). 
-            </p>      
-        </section>
+                <hr>
+                <p class="sub">
+                    It is obvious to see that the runtime for <code>convolution_four_loops</code> increases when  
+                    filter kernel size increases a lot, while the runtime of <code>convolution_two_loops</code> seems to 
+                    stays the same (at around 14 seconds). Therefore, when the kernel size is small, my 
+                    <code>convolution_four_loops</code> has a shorter runtime than my <code>convolution_two_loops</code>; 
+                    when the kernel size is large, my <code>convolution_four_loops</code> has a longer runtime than my 
+                    <code>convolution_two_loops</code>. However, both of my two functions (1s-10s scale) are way slower than 
+                    <code>scipy.signal.convolve2d</code> (0.01s-0.1s scale). 
+                </p>      
+            </section>
 
-        <section class="card" id="part 1.2">
-            <h2>Part 1.2: Finite Difference Operator</h2>
-            <hr>
-            <p class="sub">
-                For given "cameraman" image, do partial derivatives in x and y directions, which means to convolve the
-                image with <strong>D<sub>x</sub></strong> and <strong>D<sub>y</sub></strong>, then calculate the gradient
-                magnitude (<code>sqrt(G_x**2 + G_y**2)</code>).
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/cameraman.png" alt="cameraman" data-lightbox>
-                        <figcaption>
-                            cameraman
-                        </figcaption>
-                    </figure>
+            <section class="card" id="part 1.2">
+                <h2>Part 1.2: Finite Difference Operator</h2>
+                <hr>
+                <p class="sub">
+                    For given "cameraman" image, do partial derivatives in x and y directions, which means to convolve the
+                    image with <strong>D<sub>x</sub></strong> and <strong>D<sub>y</sub></strong>, then calculate the gradient
+                    magnitude (<code>sqrt(G_x**2 + G_y**2)</code>).
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/cameraman.png" alt="cameraman" data-lightbox>
+                            <figcaption>
+                                cameraman
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_2_gx.jpg" alt="x gradient" data-lightbox>
+                            <figcaption>
+                                x gradient
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_2_gy.jpg" alt="y gradient" data-lightbox>
+                            <figcaption>
+                                y gradient
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_2_mag_norm.jpg" alt="gradient magnitude" data-lightbox>
+                            <figcaption>
+                                magnitude (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_2_gx.jpg" alt="x gradient" data-lightbox>
-                        <figcaption>
-                            x gradient
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_2_gy.jpg" alt="y gradient" data-lightbox>
-                        <figcaption>
-                            y gradient
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_2_mag_norm.jpg" alt="gradient magnitude" data-lightbox>
-                        <figcaption>
-                            magnitude (normalized)
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                The magnitude image is already looks like an edge image, but the edges are not very clear. To turn the 
-                magnitude into a better edge image with more solid edges, the magnitude should be binarized with 
-                appropriate threshold. The binaried images with different thresholds are shown below, the images with
-                threshold = 0.15 and threshold = 0.2 seem to have preserved all real edges, but there are a lot of noisy 
-                points. The images with threshold = 0.25 and threshold = 0.3 seem have less noisy pints, but some of the
-                edges are not shown solidly.
-            </p>
-            <figure>
-                <img src="./out/p1_2_binary.jpg" alt="binaried cameraman with different threshold" data-lightbox>
-            </figure>
-        </section>
+                <hr>
+                <p class="sub">
+                    The magnitude image is already looks like an edge image, but the edges are not very clear. To turn the 
+                    magnitude into a better edge image with more solid edges, the magnitude should be binarized with 
+                    appropriate threshold. The binaried images with different thresholds are shown below, the images with
+                    threshold = 0.15 and threshold = 0.2 seem to have preserved all real edges, but there are a lot of noisy 
+                    points. The images with threshold = 0.25 and threshold = 0.3 seem have less noisy pints, but some of the
+                    edges are not shown solidly.
+                </p>
+                <figure>
+                    <img src="./out/p1_2_binary.jpg" alt="binaried cameraman with different threshold" data-lightbox>
+                </figure>
+            </section>
 
-        <section class="card" id="part 1.3">
-            <h2>Part 1.3: Derivative of Gaussian (DoG) Filter</h2>
-            <hr>
-            <p class="sub">
-                To have a denoisied edge image with solid edges, a method is to smooth the image with gaussian filter 
-                before (k = 7, &sigma; = 2) derivative, magnitude and binarization. Another method is covolve the original 
-                image with DoG filters (convolve the gaussian filter with D_x and D_y).
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_3_blurred.jpg" alt="blurred cameraman" data-lightbox>
-                        <figcaption>
-                            blurred cameraman
-                        </figcaption>
-                    </figure>
+            <section class="card" id="part 1.3">
+                <h2>Part 1.3: Derivative of Gaussian (DoG) Filter</h2>
+                <hr>
+                <p class="sub">
+                    To have a denoisied edge image with solid edges, a method is to smooth the image with gaussian filter 
+                    before (k = 7, &sigma; = 2) derivative, magnitude and binarization. Another method is covolve the original 
+                    image with DoG filters (convolve the gaussian filter with D_x and D_y).
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_3_blurred.jpg" alt="blurred cameraman" data-lightbox>
+                            <figcaption>
+                                blurred cameraman
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_3_gaussian_filter.jpg" alt="gaussian filter" style="cursor:auto">
+                            <figcaption>
+                                gaussian filtert
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_3_dogx_filter.jpg" alt="DoG-x filter" style="cursor:auto">
+                            <figcaption>
+                                DoG-x filter
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p1_3_dogy_filter.jpg" alt="DoG-y filter" style="cursor:auto">
+                            <figcaption>
+                                DoG-y filter
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_3_gaussian_filter.jpg" alt="gaussian filter" style="cursor:auto">
-                        <figcaption>
-                            gaussian filtert
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_3_dogx_filter.jpg" alt="DoG-x filter" style="cursor:auto">
-                        <figcaption>
-                            DoG-x filter
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p1_3_dogy_filter.jpg" alt="DoG-y filter" style="cursor:auto">
-                        <figcaption>
-                            DoG-y filter
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                The binarized image of Gaussian smoothing image with threshold = 0.1 seems to be solid edged and denoised,
-                but the edge lines are too thick, which is might because of the image is over-blurred. In contrast, the 
-                binarized image of GoD filtered image with the same threshold = 0.1 is also solid edgged and denoised, 
-                and the edges preserve the thickness of original image.
-            </p>
-            <figure>
-                <img src="./out/p1_3_binary_gaussian_smooth.jpg" alt="binaried smoothed image different threshold" data-lightbox>
-            </figure>
-            <br>
-            <figure>
-                <img src="./out/p1_3_binary_dog.jpg" alt="binaried DoG image different threshold" data-lightbox>
-            </figure>
-        </section>
+                <hr>
+                <p class="sub">
+                    The binarized image of Gaussian smoothing image with threshold = 0.1 seems to be solid edged and denoised,
+                    but the edge lines are too thick, which is might because of the image is over-blurred. In contrast, the 
+                    binarized image of GoD filtered image with the same threshold = 0.1 is also solid edgged and denoised, 
+                    and the edges preserve the thickness of original image.
+                </p>
+                <figure>
+                    <img src="./out/p1_3_binary_gaussian_smooth.jpg" alt="binaried smoothed image different threshold" data-lightbox>
+                </figure>
+                <br>
+                <figure>
+                    <img src="./out/p1_3_binary_dog.jpg" alt="binaried DoG image different threshold" data-lightbox>
+                </figure>
+            </section>
 
-        <section class="card" id="part 2.1">
-            <h2>Part 2.1: Image "Sharpening"</h2>
-            <hr>
-            <p class="sub">
-                An image often looks sharper if it has stronger high frequencies. Therefore, to sharp an image is to add
-                more high frequencies to original image. High frequencies can be get by subtracting low frequencies 
-                (gaussian blur filter is a low pass filter) from original image. The result from addtion should be
-                clipped to [0, 1].
-                <br><br>
-                An example with given <code>taj.jpg</code> is shown, with gaussian fiter (k = 5, &sigma; = 1):
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/taj.jpg" alt="original taj" data-lightbox>
-                        <figcaption>
-                            original
-                        </figcaption>
-                    </figure>
+            <section class="card" id="part 2.1">
+                <h2>Part 2.1: Image "Sharpening"</h2>
+                <hr>
+                <p class="sub">
+                    An image often looks sharper if it has stronger high frequencies. Therefore, to sharp an image is to add
+                    more high frequencies to original image. High frequencies can be get by subtracting low frequencies 
+                    (gaussian blur filter is a low pass filter) from original image. The result from addtion should be
+                    clipped to [0, 1].
+                    <br><br>
+                    An example with given <code>taj.jpg</code> is shown, with gaussian fiter (k = 5, &sigma; = 1):
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/taj.jpg" alt="original taj" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_taj_blurred.jpg" alt="blurred taj" data-lightbox>
+                            <figcaption>
+                                blurred
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_taj_high_freq.jpg" alt="taj high frequencies (normalized)" data-lightbox>
+                            <figcaption>
+                                high freq (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_taj_sharp.jpg" alt="sharpened taj" data-lightbox>
+                            <figcaption>
+                                sharpened
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_taj_blurred.jpg" alt="blurred taj" data-lightbox>
-                        <figcaption>
-                            blurred
-                        </figcaption>
-                    </figure>
+                <p class="sub">
+                    Implement same sharpening process on my own chosen image (<code>berkeley.jpg</code>)
+                    with gaussian filter (k = 9, &sigma; = 2):
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/berkeley.jpg" alt="original berkeley" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_blurred.jpg" alt="blurred berkeley" data-lightbox>
+                            <figcaption>
+                                blurred
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_high_freq.jpg" alt="berkeley high frequencies (normalized)" data-lightbox>
+                            <figcaption>
+                                high freq (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_sharp.jpg" alt="sharpened berkeley" data-lightbox>
+                            <figcaption>
+                                sharpened
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_taj_high_freq.jpg" alt="taj high frequencies (normalized)" data-lightbox>
-                        <figcaption>
-                            high freq (normalized)
-                        </figcaption>
-                    </figure>
+                <hr>
+                <p class="sub">
+                    Above sharpening procedures can be combined into one single convolution fiter, 
+                    which is called unsharp mask filter.
+                    <br><br>
+                    unsharp mask = uniform + (uniform - gaussian) 
+                    <br><br>
+                    ** A convolution with uniform filter return an image that is identical to original
+                    image. "uniform filter" has the same shape with gaussian, with all elements zeros, 
+                    except the centered element, which is one.
+                    <br><br>
+                    Generate sharpened images of <code>berkeley.jpg</code> with different k and &sigma;
+                    values of gaussian:
+                </p>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k7_sigma1.jpg" alt="k7_sigma1" data-lightbox>
+                            <figcaption>
+                                k = 7, &sigma; = 1
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k13_sigma2.jpg" alt="k13_sigma2" data-lightbox>
+                            <figcaption>
+                                k = 13, &sigma; = 2
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k19_sigma3.jpg" alt="k19_sigma3" data-lightbox>
+                            <figcaption>
+                                k = 19, &sigma; = 3
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k25_sigma4.jpg" alt="k25_sigma4" data-lightbox>
+                            <figcaption>
+                                k = 25, &sigma; = 4
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_taj_sharp.jpg" alt="sharpened taj" data-lightbox>
-                        <figcaption>
-                            sharpened
-                        </figcaption>
-                    </figure>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k9_sigma1.jpg" alt="k9_sigma1" data-lightbox>
+                            <figcaption>
+                                k = 9, &sigma; = 1
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k9_sigma2.jpg" alt="k9_sigma2" data-lightbox>
+                            <figcaption>
+                                k = 9, &sigma; = 2
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k9_sigma3.jpg" alt="k9_sigma3" data-lightbox>
+                            <figcaption>
+                                k = 9, &sigma; = 3
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_1_berkeley_k9_sigma4.jpg" alt="k9_sigma4" data-lightbox>
+                            <figcaption>
+                                k = 9, &sigma; = 4
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-            </div>
-            <p class="sub">
-                Implement same sharpening process on my own chosen image (<code>berkeley.jpg</code>)
-                with gaussian filter (k = 9, &sigma; = 2):
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/berkeley.jpg" alt="original berkeley" data-lightbox>
-                        <figcaption>
-                            original
-                        </figcaption>
-                    </figure>
+                <p class="sub">
+                    As a result by comparing above images, either incresing sigma or k will increase
+                    the sharpness.
+                </p>
+                <hr>
+                <p class="sub">
+                    For evaluation, I picked a sharp image (<code>snowflake.jpg</code>), blur it and then 
+                    sharpen it again with same gaussian filter. By comparing the original and result, I 
+                    found out that the blur-and-sharpen result seems to be more sharped than the original.
+                    The bright parts are getting brighter.
+                </p>
+                <div class="grid">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/snowflake.jpg" alt="snowflake original" data-lightbox>
+                            <figcaption>
+                                <string>original</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p2_1_snowflake_blur_sharp.jpg" alt="blurred and sharpened" data-lightbox>
+                            <figcaption>
+                                <string>blur-and-sharpened</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-2">
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_blurred.jpg" alt="blurred berkeley" data-lightbox>
-                        <figcaption>
-                            blurred
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_high_freq.jpg" alt="berkeley high frequencies (normalized)" data-lightbox>
-                        <figcaption>
-                            high freq (normalized)
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_sharp.jpg" alt="sharpened berkeley" data-lightbox>
-                        <figcaption>
-                            sharpened
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                Above sharpening procedures can be combined into one single convolution fiter, 
-                which is called unsharp mask filter.
-                <br><br>
-                unsharp mask = uniform + (uniform - gaussian) 
-                <br><br>
-                ** A convolution with uniform filter return an image that is identical to original
-                image. "uniform filter" has the same shape with gaussian, with all elements zeros, 
-                except the centered element, which is one.
-                <br><br>
-                Generate sharpened images of <code>berkeley.jpg</code> with different k and &sigma;
-                values of gaussian:
-            </p>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k7_sigma1.jpg" alt="k7_sigma1" data-lightbox>
-                        <figcaption>
-                            k = 7, &sigma; = 1
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k13_sigma2.jpg" alt="k13_sigma2" data-lightbox>
-                        <figcaption>
-                            k = 13, &sigma; = 2
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k19_sigma3.jpg" alt="k19_sigma3" data-lightbox>
-                        <figcaption>
-                            k = 19, &sigma; = 3
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k25_sigma4.jpg" alt="k25_sigma4" data-lightbox>
-                        <figcaption>
-                            k = 25, &sigma; = 4
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k9_sigma1.jpg" alt="k9_sigma1" data-lightbox>
-                        <figcaption>
-                            k = 9, &sigma; = 1
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k9_sigma2.jpg" alt="k9_sigma2" data-lightbox>
-                        <figcaption>
-                            k = 9, &sigma; = 2
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k9_sigma3.jpg" alt="k9_sigma3" data-lightbox>
-                        <figcaption>
-                            k = 9, &sigma; = 3
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_1_berkeley_k9_sigma4.jpg" alt="k9_sigma4" data-lightbox>
-                        <figcaption>
-                            k = 9, &sigma; = 4
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <p class="sub">
-                As a result by comparing above images, either incresing sigma or k will increase
-                the sharpness.
-            </p>
-            <hr>
-            <p class="sub">
-                For evaluation, I picked a sharp image (<code>snowflake.jpg</code>), blur it and then 
-                sharpen it again with same gaussian filter. By comparing the original and result, I 
-                found out that the blur-and-sharpen result seems to be more sharped than the original.
-                The bright parts are getting brighter.
-            </p>
-            <div class="grid">
-                <div class="col-2">
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/snowflake.jpg" alt="snowflake original" data-lightbox>
-                        <figcaption>
-                            <string>original</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p2_1_snowflake_blur_sharp.jpg" alt="blurred and sharpened" data-lightbox>
-                        <figcaption>
-                            <string>blur-and-sharpened</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-2">
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="card" id="part 2.2">
-            <h2>Part 2.2: Hybrid Images</h2>
-            <hr>
-            <p class="sub">
-                The goal of this part is to create one hybrid image from two images, taking low frequecies 
-                (gaussian filter) part from image A, and high frequencies (original - gaussian) from B, 
-                and adding them together to create the final image that clipped to [0, 1]. 
-                The two images show be aligned before hybriding.
-                <br><br>
-                In the result image, high frequencies tend to be dominated if looking in close distance, 
-                while low frequencies tend to dominated if looking in far distance.
-            </p>
-            <h3>Derek + nutmeg</h3>
-            <div class="grid">
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/derek_aligned.jpg" alt="Derek (low-pass)" data-lightbox>
-                        <figcaption>
-                            <string>Derek (low-pass)</string>
-                        </figcaption>
-                    </figure>
+            <section class="card" id="part 2.2">
+                <h2>Part 2.2: Hybrid Images</h2>
+                <hr>
+                <p class="sub">
+                    The goal of this part is to create one hybrid image from two images, taking low frequecies 
+                    (gaussian filter) part from image A, and high frequencies (original - gaussian) from B, 
+                    and adding them together to create the final image that clipped to [0, 1]. 
+                    The two images show be aligned before hybriding.
+                    <br><br>
+                    In the result image, high frequencies tend to be dominated if looking in close distance, 
+                    while low frequencies tend to dominated if looking in far distance.
+                </p>
+                <h3>Derek + nutmeg</h3>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/derek_aligned.jpg" alt="Derek (low-pass)" data-lightbox>
+                            <figcaption>
+                                <string>Derek (low-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/nutmeg_aligned.jpg" alt="nutmeg (high-pass)" data-lightbox>
+                            <figcaption>
+                                <string>nutmeg (high-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p2_2_derek_nutmeg.jpg" alt="derek + nutmeg" data-lightbox>
+                            <figcaption>
+                                <string>Derek + nutmeg</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/nutmeg_aligned.jpg" alt="nutmeg (high-pass)" data-lightbox>
-                        <figcaption>
-                            <string>nutmeg (high-pass)</string>
-                        </figcaption>
-                    </figure>
+                <h3>Panda + red panda</h3>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/panda_aligned.jpg" alt="panda (low-pass)" data-lightbox>
+                            <figcaption>
+                                <string>panda (low-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/redpanda_aligned.jpg" alt="red panda (high-pass)" data-lightbox>
+                            <figcaption>
+                                <string>red panda (high-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p2_2_panda_redpanda.jpg" alt="panda + red panda" data-lightbox>
+                            <figcaption>
+                                <string>panda + red panda</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p2_2_derek_nutmeg.jpg" alt="derek + nutmeg" data-lightbox>
-                        <figcaption>
-                            <string>Derek + nutmeg</string>
-                        </figcaption>
-                    </figure>
+                <h3>Elephant + dog</h3>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/elephant_aligned.jpg" alt="elephant (low-pass)" data-lightbox>
+                            <figcaption>
+                                <string>elephant (low-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/dog_aligned.jpg" alt="dog (high-pass)" data-lightbox>
+                            <figcaption>
+                                <string>dog (high-pass)</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/p2_2_elephant_dog.jpg" alt="elephant + dog" data-lightbox>
+                            <figcaption>
+                                <string>elephant + dog</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-            </div>
-            <h3>Panda + red panda</h3>
-            <div class="grid">
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/panda_aligned.jpg" alt="panda (low-pass)" data-lightbox>
-                        <figcaption>
-                            <string>panda (low-pass)</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/redpanda_aligned.jpg" alt="red panda (high-pass)" data-lightbox>
-                        <figcaption>
-                            <string>red panda (high-pass)</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p2_2_panda_redpanda.jpg" alt="panda + red panda" data-lightbox>
-                        <figcaption>
-                            <string>panda + red panda</string>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <h3>Elephant + dog</h3>
-            <div class="grid">
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/elephant_aligned.jpg" alt="elephant (low-pass)" data-lightbox>
-                        <figcaption>
-                            <string>elephant (low-pass)</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./media/dog_aligned.jpg" alt="dog (high-pass)" data-lightbox>
-                        <figcaption>
-                            <string>dog (high-pass)</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-4">
-                    <figure>
-                        <img src="./out/p2_2_elephant_dog.jpg" alt="elephant + dog" data-lightbox>
-                        <figcaption>
-                            <string>elephant + dog</string>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <hr>
-            <p class="sub">
-                To better understand the frequcies process, I chose the "elephant + dog" example to
-                create Fourier Transform map for each stage.
-            </p>
-            <figure>
-                <img src="./out/p2_2_fft_grid.jpg" alt="fft grid" data-lightbox>
-            </figure>
-        </section>
+                <hr>
+                <p class="sub">
+                    To better understand the frequcies process, I chose the "elephant + dog" example to
+                    create Fourier Transform map for each stage.
+                </p>
+                <figure>
+                    <img src="./out/p2_2_fft_grid.jpg" alt="fft grid" data-lightbox>
+                </figure>
+            </section>
 
-        <section class="card" id="part 2.3">
-            <h2>Part 2.3: Gaussian and Laplacian Stacks</h2>
-            <hr>
-            <p class="sub">
-                The goal of this part is to blend two images seamlessly using a multi resolution blending 
-                as described in the 1983 paper by Burt and Adelson, with a mask that determine the blending
-                shapes. <br><br>
-                The method is to build a Gaussian and Laplacian stack (gradually blur the images at each level
-                without downsample), the laplacian in each level is the to subtract gaussian image at next level
-                from gaussian image at this level. Knowing that gaussian filter is a low pass filter, then
-                the laplacians are the clusters of high frequcies, middle frequencies, and lower frequencies.
-                The guassian at the last level is then the rest lowest frequencies cluster. The mask should 
-                also be gradually blurred at each level (symm padding). 
-                <br><br>
-                For each level of frequencies: <br><br>
-                blend = Image A * mask + Image B * (1 - mask) <br><br>
-                In the end, summarize the blended frequencies at each level to create full range of frequencies.
-                <br><br>
-                Applying my Gaussian and Laplacian stacks to the Oraple and recreating the grid in Burt and 
-                Adelson's paper:
-            </p>
-            <figure>
-                <img src="./out/p2_3_blend_grid.jpg" alt="blend grid" data-lightbox>
-            </figure>
-        </section>
+            <section class="card" id="part 2.3">
+                <h2>Part 2.3: Gaussian and Laplacian Stacks</h2>
+                <hr>
+                <p class="sub">
+                    The goal of this part is to blend two images seamlessly using a multi resolution blending 
+                    as described in the 1983 paper by Burt and Adelson, with a mask that determine the blending
+                    shapes. <br><br>
+                    The method is to build a Gaussian and Laplacian stack (gradually blur the images at each level
+                    without downsample), the laplacian in each level is the to subtract gaussian image at next level
+                    from gaussian image at this level. Knowing that gaussian filter is a low pass filter, then
+                    the laplacians are the clusters of high frequcies, middle frequencies, and lower frequencies.
+                    The guassian at the last level is then the rest lowest frequencies cluster. The mask should 
+                    also be gradually blurred at each level (symm padding). 
+                    <br><br>
+                    For each level of frequencies: <br><br>
+                    blend = Image A * mask + Image B * (1 - mask) <br><br>
+                    In the end, summarize the blended frequencies at each level to create full range of frequencies.
+                    <br><br>
+                    Applying my Gaussian and Laplacian stacks to the Oraple and recreating the grid in Burt and 
+                    Adelson's paper:
+                </p>
+                <figure>
+                    <img src="./out/p2_3_blend_grid.jpg" alt="blend grid" data-lightbox>
+                </figure>
+            </section>
 
-        <section class="card" id="part 2.4">
-            <h2>Part 2.4: Multiresolution Blending (a.k.a. the oraple!)</h2>
-            <hr>
-            <p class="sub">
-                Using the strategies decreibed in last part to create blend images with my own examples!
-                <br><br>
-                Sometimes, the seam between two images are very clear. To make the transition smoother, I choose to
-                make the mask more blurred (with larger k and &sigma;).
-            </p>
-            <h3>Oraple (apple + orange)</h3>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/apple.jpeg" alt="apple" data-lightbox>
-                        <figcaption>
-                            <string>apple</string>
-                        </figcaption>
-                    </figure>
+            <section class="card" id="part 2.4">
+                <h2>Part 2.4: Multiresolution Blending (a.k.a. the oraple!)</h2>
+                <hr>
+                <p class="sub">
+                    Using the strategies decreibed in last part to create blend images with my own examples!
+                    <br><br>
+                    Sometimes, the seam between two images are very clear. To make the transition smoother, I choose to
+                    make the mask more blurred (with larger k and &sigma;).
+                </p>
+                <h3>Oraple (apple + orange)</h3>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/apple.jpeg" alt="apple" data-lightbox>
+                            <figcaption>
+                                <string>apple</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/orange.jpeg" alt="orange" data-lightbox>
+                            <figcaption>
+                                <string>orange</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_oraple_mask.jpg" alt="oraple mask" data-lightbox>
+                            <figcaption>
+                                <string>mask</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_oraple.jpg" alt="oraple" data-lightbox>
+                            <figcaption>
+                                <string>oraple</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/orange.jpeg" alt="orange" data-lightbox>
-                        <figcaption>
-                            <string>orange</string>
-                        </figcaption>
-                    </figure>
+                <h3>Sunset scenery (sunset + scenery)</h3>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_sunset_crop.jpg" alt="sunset" data-lightbox>
+                            <figcaption>
+                                <string>sunset</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_scenery_crop.jpg" alt="scenery" data-lightbox>
+                            <figcaption>
+                                <string>scenery</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_sunset_scenery_mask.jpg" alt="sunset scenery mask" data-lightbox>
+                            <figcaption>
+                                <string>mask</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_sunset_scenery.jpg" alt="sunset scenery" data-lightbox>
+                            <figcaption>
+                                <string>sunset scenery</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_oraple_mask.jpg" alt="oraple mask" data-lightbox>
-                        <figcaption>
-                            <string>mask</string>
-                        </figcaption>
-                    </figure>
+                <h3>Puppy bow (shiba inu + puppy)</h3>
+                <div class="grid" style="gap:8px;">
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/dog3_aligned.jpg" alt="shiba inu (with bow)" data-lightbox>
+                            <figcaption>
+                                <string>shiba inu</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./media/dog4_aligned.jpg" alt="puppy" data-lightbox>
+                            <figcaption>
+                                <string>puppy</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_puppy_bow_mask.jpg" alt="puppy bow mask" data-lightbox>
+                            <figcaption>
+                                <string>mask</string>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="./out/p2_4_puppy_bow.jpg" alt="puppy bow" data-lightbox>
+                            <figcaption>
+                                <string>puppy bow</string>
+                            </figcaption>
+                        </figure>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_oraple.jpg" alt="oraple" data-lightbox>
-                        <figcaption>
-                            <string>oraple</string>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <h3>Sunset scenery (sunset + scenery)</h3>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_sunset_crop.jpg" alt="sunset" data-lightbox>
-                        <figcaption>
-                            <string>sunset</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_scenery_crop.jpg" alt="scenery" data-lightbox>
-                        <figcaption>
-                            <string>scenery</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_sunset_scenery_mask.jpg" alt="sunset scenery mask" data-lightbox>
-                        <figcaption>
-                            <string>mask</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_sunset_scenery.jpg" alt="sunset scenery" data-lightbox>
-                        <figcaption>
-                            <string>sunset scenery</string>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-            <h3>Puppy bow (shiba inu + puppy)</h3>
-            <div class="grid" style="gap:8px;">
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/dog3_aligned.jpg" alt="shiba inu (with bow)" data-lightbox>
-                        <figcaption>
-                            <string>shiba inu</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./media/dog4_aligned.jpg" alt="puppy" data-lightbox>
-                        <figcaption>
-                            <string>puppy</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_puppy_bow_mask.jpg" alt="puppy bow mask" data-lightbox>
-                        <figcaption>
-                            <string>mask</string>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-3">
-                    <figure>
-                        <img src="./out/p2_4_puppy_bow.jpg" alt="puppy bow" data-lightbox>
-                        <figcaption>
-                            <string>puppy bow</string>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
 
-        </section>
-    </main>
+            </section>
+        </main>
+        
+    </div>
 </body>
 </html>
 

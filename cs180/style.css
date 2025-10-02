@@ -8,6 +8,7 @@
   --brand-1: #DAD299;
   --brand-2: #B0DAB9;
   --brand-3: #809d98;
+  --brand-4: #9db5a6;
   --shadow: rgba(17, 24, 39, 0.131);
   --maxw: 1080px;
 }
@@ -15,9 +16,11 @@
 *{box-sizing:border-box}
 html,body {
   margin: 0;
+  font-size: 16px;
   background: var(--bg); 
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial
 }
+
 li {
   margin-bottom: 10px;
 }
@@ -34,6 +37,7 @@ section.card {
   box-shadow: 0 10px 10px 0 var(--shadow);
   padding: 30px;
   margin: 30px 20px;
+  scroll-margin-top: 90px;
 }
 .card h2 {
   margin: 4px 0 10px;
@@ -67,31 +71,10 @@ section.card {
 }
 @media (max-width: 820px) {
   .container{display: block};
-  .container_left, .container_right {flex: none};
 }
-
-/* ===== Code Box ===== */
-.code_container {
-  border-radius: 6px;
-  box-shadow: 0 10px 10px 0 var(--shadow);
-  background:#f7f9f9;
-  color: var(--code);
-  font-family: "Fira Code", "Menlo", monospace;
-}
-.code_header {
-  margin: -25px 0px -15px;
-  padding: 0px 10px 10px;
-  text-align: start;
-  text-wrap: wrap;
-  font-size: 11px;
-  border-bottom: 1px solid var(--shadow);
-}
-.code_box {
-  font-size: 13px;
-  font-family: inherit;
-  margin: -25px 20px;
-  line-height: 1.5;
-  overflow: auto;
+.main_container {
+  display: flex;
+  margin: 0 auto;
 }
 
 
@@ -145,6 +128,39 @@ section.card {
   color: var(---body);
 }
 
+
+/* ==== Sidebar ====*/
+.sidebar {
+  background-color: var(--brand-4);
+  color: white;
+  padding: 20px;
+  top: 80px;
+  left: 0;
+  height: calc(100vh - 80px);
+  max-width: 20%;
+  position: sticky;
+  box-shadow: 0 0 10px 0 var(--shadow);
+  overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+.sidebar a:hover {
+  background-color: var(--brand-3);
+}
+@media (max-width: 1080px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+
 /* ===== Tabs ===== */
 .tabs {
   margin-top: 18px;
@@ -160,6 +176,7 @@ section.card {
   box-shadow:0 8px 18px rgba(0,0,0,.08)
 }
 
+
 /* ===== Grids ===== */
 .grid{display:grid; gap:16px; grid-template-columns: repeat(12, minmax(0, 1fr));}
 .col-2{grid-column: span 2;}
@@ -171,6 +188,7 @@ section.card {
 @media (max-width: 820px) {
   .col-2,.col-3,.col-4,.col-5,.col-6,.col-8{grid-column: span 12;}
 }
+
 
 /* ===== Media ===== */
 figure {
@@ -195,6 +213,44 @@ figcaption{
   padding: 10px 12px;
   text-align: center;
   line-height: 1.5;
+}
+
+
+/* ===== Code Box ===== */
+iframe {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin: 20px;
+  border: none;
+  overflow: auto;
+  border-radius: 6px;
+}
+.code_container {
+  border-radius: 6px;
+  box-shadow: 0 10px 10px 0 var(--shadow);
+  background: #f0f0f0;
+  color: var(--code);
+  font-family: "Fira Code", "Menlo", monospace;
+}
+.code_container iframe {
+  height: 90%;
+  margin: 10px 0 0 0;
+  border-radius: 0;
+}
+.code_header {
+  padding: 10px 10px;
+  text-align: start;
+  text-wrap: wrap;
+  font-size: 11px;
+  border-bottom: 1px solid var(--shadow);
+}
+.code_box {
+  font-size: 13px;
+  font-family: inherit;
+  margin: -25px 20px;
+  line-height: 1.5;
+  overflow: auto;
 }
 
 
