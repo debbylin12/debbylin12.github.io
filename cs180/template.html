@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 2</title>
+    <link rel="stylesheet" href="./style.css"> <!--path to style sheet "../style.css"-->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-…(hash)…" crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
+<body>
+    <!-- top menu-->
+    <header class="sticky_header">
+        <div class="sticky_header_container">
+            <h1><a href="../index.html">CS 180</a></h1>
+            <nav>
+                <ul>
+                    <li> <h1><a href="#">Project X &nbsp;<i class="fas fa-chevron-down"></i></a></h1>
+                        <ul>
+                            <li><a href="../project0/index.html">Project 0</a></li>
+                            <li><a href="../project1/index.html">Project 1</a></li>
+                            <li><a href="../project2/index.html">Project 2</a></li>
+                            <li><a href="#">Project 3A</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- title -->
+    <header class="autumn">
+        <div class="autumn_inner">
+            <h1>Project Name</h1>
+        </div>
+    </header>
+
+    <div class="main_container">
+        <!-- siderbar -->
+        <div class="sidebar">
+            <h2>Content</h2>
+            <h3>Part 1</h3>
+            <a href="#section_id1">section name</a>
+            <h3>Part 2</h3>
+            <a href="#section_id2">section name</a>
+        </div>
+        <!-- main content -->
+        <main class="wrap" style="max-width: 80%;">
+            <section class="card" id="section_id1">
+                <h2>Section Name</h2>
+                <hr>
+                <p class="sub">
+                    decription of this section
+                </p>            
+                <hr>
+                <!-- image grid -->
+                <div class="grid">
+                    <div class="col-3">
+                        <figure>
+                            <img src="path/to/picture" alt="My picture" data-lightbox>
+                            <figcaption>
+                                <strong>My picture</strong><br>
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="path/to/picture" alt="My picture" data-lightbox>
+                            <figcaption>
+                                <strong>My picture</strong><br>
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="path/to/picture" alt="My picture" data-lightbox>
+                            <figcaption>
+                                <strong>My picture</strong><br>
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-3">
+                        <figure>
+                            <img src="path/to/picture" alt="My picture" data-lightbox>
+                            <figcaption>
+                                <strong>My picture</strong><br>
+                                <br>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card" id="section_id2">
+                <h2>Section name</h2>
+                <hr>
+                <p class="sub">
+                    description of this section
+                </p>
+                <!--code box manually type-->
+                <div class="code_container" style="height: 450px">
+                    <div class="code_header">python</div>
+                    <div class="code_box">
+                        <pre><code>
+<!--python code don't do extra spacing-->
+def print_hello_world():
+    """print hello world"""
+    print("Hello World!")
+    return
+                        </code>
+                    </div>
+                </div>
+                <hr>
+                <!--code box styled html-->
+                <div class="code_container" style="height: 450px">
+                    <div class="code_header">python</div>
+                    <iframe src="path/to/code/html"></iframe>
+                </div>
+            </section>
+        </main>
+        
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!--Lightbox-->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
+    <img alt="" id="lb-img" style="display:none">
+    <video id="lb-video" style="display:none" controls></video>
+</div>
+
+<!--Lightbox script (reused)-->
+<script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbVideo = document.getElementById('lb-video');
+
+    function openLightbox(el) {
+        const isVideo = el.tagName.toLowerCase() === 'video' || (el.src && el.src.endsWith('.mp4'));
+        lb.classList.add('open');
+
+        if (isVideo) {
+        lbVideo.src = el.src;
+        lbVideo.style.display = 'block';
+        lbImg.style.display = 'none';
+        } else {
+        lbImg.src = el.src;
+        lbImg.alt = el.alt || '';
+        lbImg.style.display = 'block';
+        lbVideo.style.display = 'none';
+        }
+        lb.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+        lb.classList.remove('open');
+        lbImg.src = '';
+        lbVideo.pause();
+        lbVideo.removeAttribute('src');
+        lb.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('click', e => {
+        const t = e.target;
+        if (t.matches('[data-lightbox]')) {
+        openLightbox(t);
+        } else if (t.id === 'lightbox') {
+        closeLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lb.classList.contains('open')) {
+        closeLightbox();
+        }
+    });
+</script>
