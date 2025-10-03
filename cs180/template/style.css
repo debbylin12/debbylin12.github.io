@@ -201,6 +201,7 @@ section.card {
   top: 80px;
   left: 0;
   height: calc(100vh - 80px);
+  min-width: 15%;
   max-width: 20%;
   position: sticky;
   box-shadow: 0 0 10px 0 var(--shadow);
