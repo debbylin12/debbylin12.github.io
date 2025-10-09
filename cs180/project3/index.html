@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 3</title>
+    <link rel="stylesheet" href="../template/style.css"> <!--path to style sheet "../style.css"-->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-…(hash)…" crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
+<body>
+    <!-- top menu-->
+    <header class="sticky_header">
+        <div class="sticky_header_container">
+            <h1><a href="../index.html">CS 180</a></h1>
+            <nav>
+                <ul>
+                    <li> <h1><a>Project 3&nbsp;<i class="fas fa-chevron-down"></i></a></h1>
+                        <ul>
+                            <li><a href="../project0/index.html">Project 0</a></li>
+                            <li><a href="../project1/index.html">Project 1</a></li>
+                            <li><a href="../project2/index.html">Project 2</a></li>
+                            <li><a href="../project3/index.html">Project 3</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- title -->
+    <header class="autumn">
+        <div class="autumn_inner">
+            <h1>Project3: [Auto] Stitching Photo Mosaics</h1>
+        </div>
+    </header>
+
+    <div class="main_container">
+        <!-- siderbar -->
+        <div class="sidebar">
+            <h2>Content</h2>
+            <h3>Part A</h3>
+            <a href="#part A.1">Shoot the Pictures</a>
+            <a href="#part A.2">Recover Homographies</a>
+            <a href="#part A.3">Warp the Images</a>
+            <a href="#part A.4">Blend the Images into a Mosaic</a>
+            <h3>Part B</h3>
+            <a href="#section_id2">section name</a>
+        </div>
+        <!-- main content -->
+        <main class="wrap" style="max-width: 80%;">
+            <h2>Part A: IMAGE WARPING and MOSAICING</h2>
+            <section class="card" id="part A.1">
+                <h2>A.1: Shoot the Pictures</h2>
+                <hr>
+                <p class="sub">
+                    The goal of this part is to take a set of photographs from different perspective with fixed 
+                    center of projection (COP). In later parts, we will use the images to create an image mosaic 
+                    by registering, projective warping, resampling, and compositing them. In my project, I obtain
+                    two images for each set, and the two images are overlapped with some area.
+                </p>             
+                <!-- image grid -->
+                <h4 align="center">Mountain view</h4>
+                <div class="grid">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/mountainview2.JPG" alt="Mountainview rotated angle" data-lightbox>
+                            <figcaption>
+                                from a rotated angle (left)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/mountainview1.JPG" alt="Mountainview straight angle" data-lightbox>
+                            <figcaption>
+                                from a straight angle
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+                <h4 align="center">Bedroom</h4>
+                <div class="grid">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/bedroom1.JPG" alt="Bedroom straight angle" data-lightbox>
+                            <figcaption>
+                                from a straight angle
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/bedroom2.JPG" alt="Bedroom rotated angle" data-lightbox>
+                            <figcaption>
+                                from a rotated angle (right)
+                        </figure>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+                
+            </section>
+
+            <section class="card" id="part A.2">
+                <h2>A.2: Recover Homographies</h2>
+                <hr>
+                <p class="sub">
+                    We implement a homography function, <strong>p' = Hp</strong> to transform points between 
+                    two projections, where <strong>H</strong> is a 3x3 matrix. We can recover the homography 
+                    matrix <strong>H</strong>, by solving <strong>h</strong> from <strong>Ah = b</strong>:
+                </p>
+                <div class="matrix-wrapper">
+                    <table class="matrix">
+                        <tr>
+                            <td>x</td><td>y</td><td>1</td>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>-x'x</td><td>-x'y</td>
+                        </tr>
+                        <tr>
+                            <td>0</td><td>0</td><td>0</td>
+                            <td>x</td><td>y</td><td>1</td>
+                            <td>-y'x</td><td>-y'y</td>
+                        </tr>
+                    </table>
+                    <table class="matrix">
+                        <tr><td>h<sub>11</sub></td></tr>
+                        <tr><td>h<sub>12</sub></td></tr>
+                        <tr><td>h<sub>13</sub></td></tr>
+                        <tr><td>h<sub>21</sub></td></tr>
+                        <tr><td>h<sub>22</sub></td></tr>
+                        <tr><td>h<sub>23</sub></td></tr>
+                        <tr><td>h<sub>31</sub></td></tr>
+                        <tr><td>h<sub>32</sub></td></tr>
+                    </table>
+                    <p>&nbsp;=&nbsp;</p>
+                    <table class="matrix">
+                        <tr><td>x'</td></tr>
+                        <tr><td>y'</td></tr>
+                    </table>
+                </div>
+                <p class="sub">
+                    According to the matrix equation above, we need at least four pairs of corresponding points
+                    to solve for the eight unknow variables in <strong>H</strong>, knowing that <i>h<sub>33</sub></i> 
+                    is the scaling factor that can be set to 1. 
+                </p>
+                <hr>
+                <p class="sub">
+                    For a more stable and denoised solution, we use more than four pairs of corresponding points 
+                    as an overdetermined system, and use least-square (<code>numpy.linalg.lstsq</code>), to find
+                    the nearest solution. Below shows the manually selected points.
+                </p>
+                <h4 align="center">Mountain view (with points)</h4>
+                <div class="grid">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/mountainview2_pts.jpg" alt="Mountainview rotated angle" data-lightbox>
+                            <figcaption>
+                                from a rotated angle (left)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/mountainview1_pts.jpg" alt="Mountainview straight angle" data-lightbox>
+                            <figcaption>
+                                from a straight angle
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+                <h4 align="center">Bedroom (with points)</h4>
+                <div class="grid">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom1_pts.jpg" alt="Bedroom straight angle" data-lightbox>
+                            <figcaption>
+                                from a straight angle
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom2_pts.jpg" alt="Bedroom rotated angle" data-lightbox>
+                            <figcaption>
+                                from a rotated angle (right)
+                        </figure>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+                <hr>
+                <p class="sub">
+                    For the resulted <strong>h</strong>, reshape the elements into 3x3 matrix <strong>H</strong>.
+                </p>
+                <div class="matrix-wrapper">
+                    <table class="matrix">
+                        <tr><td>wx'</td></tr>
+                        <tr><td>wy'</td> </tr>
+                        <tr><td>w</td></tr>
+                    </table>
+                    <p>&nbsp;= <i>H &sdot;&nbsp;</i></p>
+                    <table class="matrix">
+                        <tr><td>x</td></tr>
+                        <tr><td>y</td> </tr>
+                        <tr><td>1</td></tr>
+                    </table>
+                    <p>&nbsp;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                    <i>H =&nbsp;</i>
+                    <table class="matrix">
+                        <tr>
+                            <td>h<sub>11</sub></td>
+                            <td>h<sub>12</sub></td>
+                            <td>h<sub>13</sub></td>
+                        </tr>
+                        <tr>
+                            <td>h<sub>21</sub></td>
+                            <td>h<sub>22</sub></td>
+                            <td>h<sub>23</sub></td>
+                        </tr>
+                        <tr>
+                            <td>h<sub>31</sub></td>
+                            <td>h<sub>32</sub></td>
+                            <td>1</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="matrix-wrapper">
+                    <i>H<sub>mountainview</sub> =&nbsp;</i>
+                    <table class="matrix">
+                        <tr>
+                            <td>1.56827576e+00</td>
+                            <td>8.32320633e-03</td>
+                            <td>-1.59489836e+03</td>
+                        </tr>
+                        <tr>
+                            <td>1.90099768e-01</td>
+                            <td>1.43859018e+00</td>
+                            <td>-2.03901687e+02</td>
+                        </tr>
+                        <tr>
+                            <td>3.62302122e-04</td>
+                            <td>-2.83569954e-05</td>
+                            <td>1.00000000e+00</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="matrix-wrapper">
+                    <i>H<sub>bedroom</sub> =&nbsp;</i>
+                    <table class="matrix">
+                        <tr>
+                            <td>6.28277799e-01</td>
+                            <td>1.75203994e-02</td>
+                            <td>7.33429173e+02</td>
+                        </tr>
+                        <tr>
+                            <td>-1.25606098e-01</td>
+                            <td>8.93432820e-01</td>
+                            <td>4.96326788e+01</td>
+                        </tr>
+                        <tr>
+                            <td>-2.23391643e-04</td>
+                            <td>7.83142776e-06</td>
+                            <td>1.00000000e+00</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card" id="part A.3">
+                <h2>A.3: Warp the Images</h2>
+                <hr>
+                <p class="sub">
+                    Actually warp the image (<code>im2 = [x, y]</code>) with respect to the image staying unwarpped 
+                    as the projection dimension (<code>im1 = [x', y']</code>). First, tranform the four corner points of 
+                    <code>im2</code> to find the warpped range of <code>im2</code> on the original projection dimension.
+                    Then, for each point in warpped range, <strong>inverse warping</strong> it back to <code>im2</code> scale, 
+                    to get the corresponding pixel color value, and fill back to warpped scale.
+                </p>
+                <p class="sub">
+                    The results of inverse warping are float that are not exactly at the pixel points, therefore,
+                    we need to interpolate the points with a proper color value. In this part, I implement two interpolation
+                    methods: 
+                </p>
+                <ul class="sub">
+                    <li><strong>Nearest Neighbor Interpolation</strong>: Round coordinates to the nearest pixel value</li>
+                    <li><strong>Bilinear Interpolation</strong>: Use weighted average of four neighboring pixels</li>
+                </ul>
+                <hr>
+                <h4 align="center">Mountain view (warpped)</h4>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/mountainview2.JPG" alt="Mountainview2 original" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/mountainview2_warp_nearest.jpg" alt="Mountainview2 nearest neighbor" data-lightbox>
+                            <figcaption>
+                                nearest neighbor interpolation
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/mountainview2_warp_bilinear.jpg" alt="Mountainview2 bilinear" data-lightbox>
+                            <figcaption>
+                                bilinear interpolation
+                        </figure>
+                    </div>
+                </div>
+                <h4 align="center">Bedroom (warpped)</h4>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/bedroom2.JPG" alt="Bedroom2 original" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom2_warp_nearest.jpg" alt="Bedroom2 nearest neighbor" data-lightbox>
+                            <figcaption>
+                                nearest neighbor interpolation
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom2_warp_bilinear.jpg" alt="Bedroom2 bilinear" data-lightbox>
+                            <figcaption>
+                                bilinear interpolation
+                        </figure>
+                    </div>
+                </div>
+                <p class="sub">
+                    Comparing the results warpping with two methods, images with nearest neighbor interpolation has slightly
+                    aliasing at edges, while images with bilinear interpolation have smoother edges.
+                </p>
+                <hr>
+                <h3>Rectification</h3>
+                <p class="sub">
+                    Test code by performing “rectification” on an image - reshape quadrangle planar to rectangle.
+                </p>
+                <h4 align="center">Macbook</h4>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/macbook.jpg" alt="Macbook original" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/macbook_rect_nn.jpg" alt="Macbook nearest neighbor" data-lightbox>
+                            <figcaption>
+                                nearest neighbor interpolation
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/macbook_rect_bi.jpg" alt="Macbook bilinear" data-lightbox>
+                            <figcaption>
+                                bilinear interpolation
+                        </figure>
+                    </div>
+                </div>
+                <h4 align="center">Drawing</h4>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/drawing.jpg" alt="Drawing original" data-lightbox>
+                            <figcaption>
+                                original
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/drawing_rect_nn.jpg" alt="Drawing nearest neighbor" data-lightbox>
+                            <figcaption>
+                                nearest neighbor interpolation
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/drawing_rect_bi.jpg" alt="Drawing bilinear" data-lightbox>
+                            <figcaption>
+                                bilinear interpolation
+                        </figure>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="card" id="part A.4">
+                <h2>A.4: Blend the Images into a Mosaic</h2>
+                <hr>
+                <p class="sub">
+                    Warp the images so they're registered and create an image mosaic with steps:
+                </p>
+                <ol class="sub">
+                    <li>Determin the canvas size, and warp both images into extended frame</li>
+                    <li>Center seam: calculate bwsidt (<code>scipy.ndimage.distance_transform_edt</code>) for both images and normalize to [0, 1] scale</li>
+                    <li>Create mask: <code>Alpha = logical(dtrans1 > dtrans2)</code></li>
+                    <li>Implement <strong>multiresolution gussian blending</strong> from <a href="../project2/index.html#part 2.3">Project 2</a> on extended images with mask</li>
+                </ol>
+                <hr>
+                <h4 align="center">Mountain view</h4>
+                <div class="grid">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview2_extend.jpg" alt="Mountainview2 extend" data-lightbox>
+                            <figcaption>
+                                original left (extended frame)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview1_extend.jpg" alt="Mountainview1 extend" data-lightbox>
+                            <figcaption>
+                                original right (extended frame)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview2_bwdist.jpg" alt="Mountainview2 bwdist" data-lightbox>
+                            <figcaption>
+                                bwdist left (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview1_bwdist.jpg" alt="Mountainview1 bwdist" data-lightbox>
+                            <figcaption>
+                                bwdist right (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview_mask.jpg" alt="Mountainview mask" data-lightbox>
+                            <figcaption>
+                                mask
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview_blend.jpg" alt="Mountainview blend" data-lightbox>
+                            <figcaption>
+                                blend mosaic
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <hr>
+                <h4 align="center">Bedroom</h4>
+                <div class="grid">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom1_extend.jpg" alt="Bedroom2 extend" data-lightbox>
+                            <figcaption>
+                                original left (extended frame)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom2_extend.jpg" alt="Bedroom1 extend" data-lightbox>
+                            <figcaption>
+                                original right (extended frame)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom1_bwdist.jpg" alt="Bedroom1 bwdist" data-lightbox>
+                            <figcaption>
+                                bwdist left (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom2_bwdist.jpg" alt="Bedroom2 bwdist" data-lightbox>
+                            <figcaption>
+                                bwdist right (normalized)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom_mask.jpg" alt="Bedroom mask" data-lightbox>
+                            <figcaption>
+                                mask
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom_blend.jpg" alt="Bedroom blend" data-lightbox>
+                            <figcaption>
+                                blend mosaic
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <hr>
+                <h4 align="center">Living Room</h4>
+                <div class="grid">
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/livingroom2.JPG" alt="Living room original left" data-lightbox>
+                            <figcaption>
+                                original left
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./media/livingroom1.JPG" alt="Living room original right" data-lightbox>
+                            <figcaption>
+                                original right
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/livingroom_blend.jpg" alt="Living room blend" data-lightbox>
+                            <figcaption>
+                                blend mosaic
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <hr>
+
+            </section>
+        </main>
+        
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!--Lightbox-->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
+    <img alt="" id="lb-img" style="display:none">
+    <video id="lb-video" style="display:none" controls></video>
+</div>
+
+<!--Lightbox script (reused)-->
+<script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbVideo = document.getElementById('lb-video');
+
+    function openLightbox(el) {
+        const isVideo = el.tagName.toLowerCase() === 'video' || (el.src && el.src.endsWith('.mp4'));
+        lb.classList.add('open');
+
+        if (isVideo) {
+        lbVideo.src = el.src;
+        lbVideo.style.display = 'block';
+        lbImg.style.display = 'none';
+        } else {
+        lbImg.src = el.src;
+        lbImg.alt = el.alt || '';
+        lbImg.style.display = 'block';
+        lbVideo.style.display = 'none';
+        }
+        lb.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+        lb.classList.remove('open');
+        lbImg.src = '';
+        lbVideo.pause();
+        lbVideo.removeAttribute('src');
+        lb.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('click', e => {
+        const t = e.target;
+        if (t.matches('[data-lightbox]')) {
+        openLightbox(t);
+        } else if (t.id === 'lightbox') {
+        closeLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lb.classList.contains('open')) {
+        closeLightbox();
+        }
+    });
+</script>
