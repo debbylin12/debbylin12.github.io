@@ -227,7 +227,7 @@ section.card {
   padding: 10px;
   border-radius: 5px;
   margin: 5px 0;
-}
+} 
 .sidebar a:hover {
   background-color: var(--brand-3);
 }
@@ -243,6 +243,8 @@ section.card {
   display: grid; 
   gap: 16px; 
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: center;        /* vertical centering */
+  justify-content: center;  
 }
 .col-1{grid-column: span 1;}
 .col-2{grid-column: span 2;}

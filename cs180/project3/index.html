@@ -49,8 +49,12 @@
             <a href="#part A.3">Warp the Images</a>
             <a href="#part A.4">Blend the Images into a Mosaic</a>
             <h3>Part B</h3>
-            <a href="#section_id2">section name</a>
+            <a href="#part B.1">Harris Corner Detection</a>
+            <a href="#part B.2">Feature Descriptor Extraction</a>
+            <a href="#part B.3">Feature Matching</a>
+            <a href="#part B.4">RANSAC for Robust Homography</a>
         </div>
+
         <!-- main content -->
         <main class="wrap" style="max-width: 80%;">
             <h2>Part A: IMAGE WARPING and MOSAICING</h2>
@@ -160,50 +164,18 @@
                     as an overdetermined system, and use least-square (<code>numpy.linalg.lstsq</code>), to find
                     the nearest solution. Below shows the manually selected points.
                 </p>
-                <h4 align="center">Mountain view (with points)</h4>
-                <div class="grid">
-                    <div class="col-2">
-                    </div>
-                    <div class="col-4">
-                        <figure>
-                            <img src="./out/mountainview2_pts.jpg" alt="Mountainview rotated angle" data-lightbox>
-                            <figcaption>
-                                from a rotated angle (left)
-                            </figcaption>
-                        </figure>
-                    </div>
-                    <div class="col-4">
-                        <figure>
-                            <img src="./out/mountainview1_pts.jpg" alt="Mountainview straight angle" data-lightbox>
-                            <figcaption>
-                                from a straight angle
-                            </figcaption>
-                        </figure>
-                    </div>
-                    <div class="col-2">
-                    </div>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/mountainview_pts.jpg" alt="Mountainview corresponding points" data-lightbox>
+                        <figcaption>Mountain view manually selected points</figcaption>
+                    </figure>
                 </div>
-                <h4 align="center">Bedroom (with points)</h4>
-                <div class="grid">
-                    <div class="col-2">
-                    </div>
-                    <div class="col-4">
-                        <figure>
-                            <img src="./out/bedroom1_pts.jpg" alt="Bedroom straight angle" data-lightbox>
-                            <figcaption>
-                                from a straight angle
-                            </figcaption>
-                        </figure>
-                    </div>
-                    <div class="col-4">
-                        <figure>
-                            <img src="./out/bedroom2_pts.jpg" alt="Bedroom rotated angle" data-lightbox>
-                            <figcaption>
-                                from a rotated angle (right)
-                        </figure>
-                    </div>
-                    <div class="col-2">
-                    </div>
+                <br>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/bedroom_pts.jpg" alt="Bedroom corresponding points" data-lightbox>
+                        <figcaption>Bedroom manually selected points</figcaption>
+                    </figure>
                 </div>
                 <hr>
                 <p class="sub">
@@ -245,18 +217,18 @@
                     <i>H<sub>mountainview</sub> =&nbsp;</i>
                     <table class="matrix">
                         <tr>
-                            <td>1.56827576e+00</td>
-                            <td>8.32320633e-03</td>
-                            <td>-1.59489836e+03</td>
+                            <td>1.55426525e+00</td>
+                            <td>1.81057374e-02</td>
+                            <td>-7.93640594e+02</td>
                         </tr>
                         <tr>
-                            <td>1.90099768e-01</td>
-                            <td>1.43859018e+00</td>
-                            <td>-2.03901687e+02</td>
+                            <td>1.79066960e-01</td>
+                            <td>1.44281487e+00</td>
+                            <td>-1.00315209e+02</td>
                         </tr>
                         <tr>
-                            <td>3.62302122e-04</td>
-                            <td>-2.83569954e-05</td>
+                            <td>6.96732348e-04</td>
+                            <td>-3.66738930e-05</td>
                             <td>1.00000000e+00</td>
                         </tr>
                     </table>
@@ -265,19 +237,19 @@
                     <i>H<sub>bedroom</sub> =&nbsp;</i>
                     <table class="matrix">
                         <tr>
-                            <td>6.28277799e-01</td>
-                            <td>1.75203994e-02</td>
-                            <td>7.33429173e+02</td>
+                            <td>6.29402684e-01</td>
+                            <td>1.10767614e-02</td>
+                            <td>3.67354813e+02</td>
                         </tr>
                         <tr>
-                            <td>-1.25606098e-01</td>
-                            <td>8.93432820e-01</td>
-                            <td>4.96326788e+01</td>
+                            <td>-1.23050587e-01</td>
+                            <td>8.92123402e-01</td>
+                            <td>2.42284821e+01</td>
                         </tr>
                         <tr>
-                            <td>-2.23391643e-04</td>
+                            <td>-4.45845136e-04</td>
                             <td>7.83142776e-06</td>
-                            <td>1.00000000e+00</td>
+                            <td>1.21073701e-05</td>
                         </tr>
                     </table>
                 </div>
@@ -574,8 +546,234 @@
                         </figure>
                     </div>
                 </div>
-                <hr>
+            </section>
+            <br><br>
 
+            <h2>Part B: FEATURE MATCHING for AUTOSTITCHING</h2>
+            <section class="card" id="part B.1">
+                <h2>B.1: Harris Corner Detection</h2>
+                <hr>
+                <p class="sub">
+                    In part A, we manually select corresponding points to recover homography matrix. In this part, 
+                    our goal is to implement an algorithm automatically detect the corresponding points, using technique
+                    descibed in this <a href="./paper.pdf">paper</a>. The ideally points should be at cormers or edges, 
+                    which contains outstanding features that are easily to be matched with another image. To achieve this goal, 
+                    we first use <a href="https://en.wikipedia.org/wiki/Harris_corner_detector"><strong>Harris Coner Detector</strong></a>
+                    extract corners and infer features of an image as interest points.
+                </p>
+                <p class="sub">
+                    I use the bedroom images as examples:
+                </p>
+                <div class="grid">
+                    <div class="col-2"> 
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom1_harris.jpg" alt="Bedroom1 Harris Detection" data-lightbox>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom2_harris.jpg" alt="Bedroom2 Harris Detection" data-lightbox>
+                        </figure>
+                    </div>
+                </div>
+                <p class="sub">
+                    Notice that the interest points detected by Harris are too many and clustered that almost cover whole image, 
+                    therefore, we implement the Adaptive Non-Maximal Suppression (ANMS) to reduce the interest points from harris
+                    to 500 points that distributed evenly on the image.
+                </p>
+                <div class="grid">
+                    <div class="col-2"> 
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom1_anms500.jpg" alt="Bedroom1 Harris Detection" data-lightbox>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="./out/bedroom2_anms500.jpg" alt="Bedroom2 Harris Detection" data-lightbox>
+                        </figure>
+                    </div>
+                    <div class="col-2"> 
+                    </div>
+                </div>
+            </section>
+            
+            <section class="card" id="part B.2">
+                <h2>B.2: Feature Descriptor Extraction</h2>
+                <hr>
+                <p class="sub">
+                    Now that we have enough points that distributed at every part of the images, and we want to match these
+                    points on two images in pairs. For each of the interest points, we setup a 40x40 window frame with the 
+                    point in the center, and inside the window, extract a pixel for each 5 pixels step. The extracted pixels 
+                    are formed as a 8x8 patch. This process is called Feature Descriptor Extraction. <br>
+                    <br>
+                    From the 500 interest points, we randomly sampled 10 points with their feature descriptor patches and 
+                    show them below, and their corresponding positions on the image.
+                </p>
+                <figure>
+                    <img src="./out/pb_2_fd_samples.jpg" alt="Feature Descriptor Samples" data-lightbox>
+                </figure>
+                <figure>
+                    <img src="./out/pb_2_fd_sample_pts.jpg" alt="Sample positions on image" data-lightbox>
+                </figure>
+            </section>
+
+            <section class="card" id="part B.3">
+                <h2>B.3: Feature Matching</h2>
+                <hr>
+                <p class="sub">
+                    Now we have created a feature descriptor patch for each interest points, to match the features, we
+                    implement some Feature Matching steps:
+                </p>
+                <ol class="sub">
+                    <li>
+                        For each patch on <code>im1</code>, flatten the 8x8 matrix, and calculate its the Euclidean Distance
+                        with every patch on <code>im2</code>.
+                    </li>
+                    <li>
+                        Find the two nearest distances, and calculate their Lowe's ratio (1-NN / 2-NN). The first nearest distance
+                        is the potential matched point, a smaller Lowe's ratio means the first nearest distance is more unique.
+                    </li>
+                    <li>
+                        With a threshold consulted from Figure 6b in the paper, here I set <code>threshold = 0.2</code>. We reserve 
+                        those points with Lowe's ratio less than the threshold, consider them as points on <code>im1</code>that have 
+                        corresponding points.
+                    </li>
+                    <li>
+                        Reserve the 1-NN nearest distance points as the corresponding points on <code>im2</code>.
+                    </li>
+                </ol>
+                <p class="sub">
+                    The reserved points are in pairs, an example is showed below. 
+                </p>
+                <div class="grid">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom1_matched.jpg" alt="Bedroom1 Feature Matching" data-lightbox>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom2_matched.jpg" alt="Bedroom2 Feature Matching" data-lightbox>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/bedroom_matched_pts.jpg" alt="Bedroom matched points" data-lightbox>
+                    </figure>
+                </div>
+            </section>
+
+            <section class="card" id="part B.4">
+                <h2>B.4: RANSAC for Robust Homography</h2>
+                <hr>
+                <p class="sub">
+                    There are still some point pairs from last part that are not matched correctly, such as pair 7 and 21 from example.
+                    Therefore, we implement 4-point RANSAC (RANdom SAmple Consensus) algorithm to remove the outliers.
+                </p>
+                <ol class="sub">
+                    <li>
+                        Randomly select four pairs to compute homography matrix H (decribed in <a href="#part A.2">Part A.2</a>).
+                    </li>
+                    <li>
+                        With the homography H, compute transformed points for all points in <code>im2</code> that project to 
+                        <code>im1</code> plane, where p'<sub>2_i</sub> = <strong>H</strong>p<sub>2_i</sub>.
+                    </li>
+                    <li>
+                        Find the inliners with <code>dist(p'<sub>2_i</sub>, p<sub>1_i</sub>)</code> less than &epsilon;.
+                        Here I set <code>&epsilon; = 10</code>.
+                    </li>
+                    <li>
+                        Count the number of inliners, keep the largest set of inliners, and repeat step 1-4 for 20 iterations.
+                    </li>
+                    <li>
+                       The largest set of inliners is the final denoised matched point sets.
+                    </li>
+                </ol>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/bedroom_auto_pts.jpg" alt="Bedroom RANSAC points" data-lightbox>
+                        <figcaption>Bedroom auto-matched points</figcaption>
+                    </figure>
+                </div>
+                <br>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/mountainview_auto_pts.jpg" alt="Mountain view RANSAC points" data-lightbox>
+                        <figcaption>Mountain view auto-matched points</figcaption>
+                    </figure>
+                </div>
+                <br>
+                <div style="display: flex; justify-content: center;">
+                    <figure style="width: 80%; height: 80%;">
+                        <img src="./out/livingroom_auto_pts.jpg" alt="Living room RANSAC points" data-lightbox>
+                        <figcaption>Living room auto-matched points</figcaption>
+                    </figure>
+                </div>
+                
+                <br>
+                <hr>
+                <h3>Manunal vs. Automatic Stitching</h3>
+                <p class="sub">
+                    With the final matched point pairs, I re-compute the mosaic blending images for my three examples. By comparing the mosaics
+                    stitched manually and automatically, the auto-stitching in the Mountain View amd Living Room examples have some misalignment that
+                    are fuzzy or unnatural transitive. The reason might be the elements are too complex, that the automative technique is not 
+                    able to recognize the major objects in an image, and keeps some unimportant points, such as the clouds in Mountain View.
+                    The auto-stitching performs better in the Bedroom example, since the objiects are simple and edges are clear and straight.
+                </p>
+                <div class="grid" >
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom_blend.jpg" alt="Bedroom stitching manually" data-lightbox>
+                            <figcaption>Bedroom stitching manually</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/bedroom_blend_auto.jpg" alt="Bedroom stitching automatically" data-lightbox>
+                            <figcaption>Bedroom stitching automatically</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <div class="grid">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview_blend.jpg" alt="Mountain view stitching manually" data-lightbox>
+                            <figcaption>Mountain view stitching manually</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/mountainview_blend_auto.jpg" alt="Mountain view stitching automatically" data-lightbox>
+                            <figcaption>Mountain view stitching automatically</figcaption>   
+                        </figure>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+                <div class="grid">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/livingroom_blend.jpg" alt="Living room stitching manually" data-lightbox>
+                            <figcaption>Living room stitching manually</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-5">
+                        <figure>
+                            <img src="./out/living_blend_auto.jpg" alt="Living room stitching automatically" data-lightbox>
+                            <figcaption>Living room stitching automatically</figcaption> 
+                        </figure>
+                    </div>
+                </div>
             </section>
         </main>
         
