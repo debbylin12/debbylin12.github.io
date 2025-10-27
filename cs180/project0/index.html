@@ -1,57 +1,204 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project 0</title>
-    <style>
-        .header {
-            background:cyan;
-            position: sticky;
-            top: 0;
-            padding: 10px;
-            width: 100%;
-        }
-        .row {
-            display: flex;
-            justify-content: center;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            justify-content: center;
-            text-align: center; 
-        }
-    </style>
+    <link rel="stylesheet" href="../template/style.css"> <!--path to style sheet "../style.css"-->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-…(hash)…" crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
 </head>
+
 <body>
-    <div class="header" id="myHeader">
-        <h1>Project 0: Becoming Friends with Your Camera</h1>
-    </div>
+    <!-- top menu-->
+    <header class="sticky_header">
+        <div class="sticky_header_container">
+            <h1><a href="../index.html">CS 180</a></h1>
+            <nav>
+                <ul>
+                    <li> <h1><a>Project 0 &nbsp;<i class="fas fa-chevron-down"></i></a></h1>
+                        <ul>
+                            <li><a href="../project0/index.html">Project 0</a></li>
+                            <li><a href="../project1/index.html">Project 1</a></li>
+                            <li><a href="../project2/index.html">Project 2</a></li>
+                            <li><a href="../project3/index.html">Project 3</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- title -->
+    <header class="autumn">
+        <div class="autumn_inner">
+            <h1>Project 0: Becoming Friends with Your Camera</h1>
+        </div>
+    </header>
+
+    <div class="main_container">
+        <!-- siderbar -->
+        <div class="sidebar">
+            <h2>Content</h2>
+            <h3>Part 1</h3>
+            <a href="#part1">Selfie: The Wrong Way vs. The Right Way</a>
+            <h3>Part 2</h3>
+            <a href="#part2">Architectural Perspective Compression</a>
+            <h3>Part 3</h3>
+            <a href="#part3">The Dolly Zoom</a>
+        </div>
     
-    <h2>Part 1: Selfie: The Wrong Way vs. The Right Way</h2>
-    <div class="row">
-        <figure>
-            <img src="selfie_closeup.JPG" alt="closeup selfie (18mm)" width="300" height="450">
-            <figcaption style="text-align: center;"> closeup (f=18mm) </figcaption>
-        </figure>
-        <figure>
-            <img src="selfie_zoomin.JPG" alt="further away (55mm)" width="300" height="450">
-            <figcaption style="text-align: center;"> further away (f=55mm) </figcaption>
-        </figure>        
+    
+        <!-- main content -->
+        <main class="wrap" style="max-width: 80%;">
+            <section class="card" id="part1">
+                <h2>Part 1: Selfie: The Wrong Way vs. The Right Way</h2>
+                <hr>
+                <p class="sub">
+                    In this part, I took a picture of myself from close up with a short focal length. Then, 
+                    I took a few steps back, zoomed in (increase focal length) and take another picture with the
+                    same size with the first picture. Although the two pictures are in the same size, the close-up 
+                    one with wide-angle lens makes my face distorted with my nose appeared larger, while the 
+                    zoomed-in one with far distance results a more natural and flat view.
+                </p>
+                <div class="grid">
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="selfie_closeup.JPG" alt="closeup selfie (18mm)" data-lightbox>
+                            <figcaption>
+                                closeup (f=18mm)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="selfie_zoomin.JPG" alt="further away (55mm)" data-lightbox>
+                            <figcaption>
+                                further away (f=55mm)
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </section>
+            
+            <section class="card" id="part2">
+                <h2>Part 2: Architectural Perspective Compression</h2>
+                <hr>
+                <p class="sub">
+                    I repeat the same process from Part 1 to take pictures of an architecture. In the results, 
+                    the picture taken zoomed-in from far distance has the lines of house straight up and flat, 
+                    while the picture taken close-up has lines tiled.
+                </p>
+                <div class="grid">
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="house_zoom.JPG" alt="far and zoomed in house" data-lightbox>
+                            <figcaption>
+                                far and zoomed in
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="house_close.JPG" alt="house without zoom" data-lightbox>
+                            <figcaption>
+                                without zoom
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            </section>
+
+            <section class="card" id="part3">
+                <h2>Part 3: The Dolly Zoom</h2>
+                <hr>
+                <p class="sub">
+                    To view the difference of pictures taken with different focal lengths, I create a scene with the 
+                    dolly zoom effect, by taking multiple frames of the sunflower, zooming in and walking away at the
+                    same time. With the sunflower stays at the same size, the background size gets smaller.
+                </p>
+                <div class="grid">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <figure>
+                            <img src="sunflower.gif" alt="dolly zoom" data-lightbox>
+                            <figcaption>
+                                zoom in while walking away from sunflower
+                            </figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+            </section>
+        </main>
     </div>
-    <hr>
-    <h2>Part 2: Architectural Perspective Compression</h2>
-        <div class="row">
-        <figure>
-            <img src="house_zoom.JPG" alt="far and zoomed in house" width="300" height="450">
-            <figcaption style="text-align: center;"> far and zoomed in </figcaption>
-        </figure>
-        <figure>
-            <img src="house_close.JPG" alt="house without zoom" width="300" height="450">
-            <figcaption style="text-align: center;"> without zoom </figcaption>
-        </figure>        
-    </div>
-    <hr>
-    <h2>Part 3: The Dolly Zoom</h2>
-    <img src="sunflower.gif" alt="dolly zoom">
 </body>
 </html>
+
+
+
+
+
+
+
+
+<!--Lightbox-->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
+    <img alt="" id="lb-img" style="display:none">
+    <video id="lb-video" style="display:none" controls></video>
+</div>
+
+<!--Lightbox script (reused)-->
+<script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbVideo = document.getElementById('lb-video');
+
+    function openLightbox(el) {
+        const isVideo = el.tagName.toLowerCase() === 'video' || (el.src && el.src.endsWith('.mp4'));
+        lb.classList.add('open');
+
+        if (isVideo) {
+        lbVideo.src = el.src;
+        lbVideo.style.display = 'block';
+        lbImg.style.display = 'none';
+        } else {
+        lbImg.src = el.src;
+        lbImg.alt = el.alt || '';
+        lbImg.style.display = 'block';
+        lbVideo.style.display = 'none';
+        }
+        lb.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeLightbox() {
+        lb.classList.remove('open');
+        lbImg.src = '';
+        lbVideo.pause();
+        lbVideo.removeAttribute('src');
+        lb.setAttribute('aria-hidden', 'true');
+    }
+
+    document.addEventListener('click', e => {
+        const t = e.target;
+        if (t.matches('[data-lightbox]')) {
+        openLightbox(t);
+        } else if (t.id === 'lightbox') {
+        closeLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && lb.classList.contains('open')) {
+        closeLightbox();
+        }
+    });
+</script>
