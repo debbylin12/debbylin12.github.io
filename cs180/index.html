@@ -1,19 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CS 180 Portfolio</title>
+    <link rel="stylesheet" href="./template/style.css"> <!--path to style sheet "../style.css"-->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-…(hash)…" crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        .button_grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: max-content; 
+            gap: 10px;
+        }
+        .button_container {
+            grid-column: span 1;
+            background: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch; 
+            align-items: stretch;
+            margin: 20px 10px;
+        }
+        @media (max-width: 820px) {
+            .button_container{grid-column: span 3;}
         }
     </style>
 </head>
+
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <a href="./project0/index.html">Project 0</a>
-    <a href="./project1/index.html">Project 1</a>
-    <a href="./project2/index.html">Project 2</a>
-    <a href="./project3/index.html">Project 3</a>
+    <header class="autumn">
+        <div class="autumn_inner">
+            <h1>Welcome to My CS180 Portfolio!</h1>
+            <p style="margin: 40px 0 -10px;">
+                <i class="fa-solid fa-house"></i>
+                <a href="#">My Homepage</a>
+                &nbsp;|&nbsp;
+                <i class="fa-solid fa-flask"></i>
+                <a href="https://cal-cs180.github.io/fa25/">Class website</a>
+            </p>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <div class="button_grid">
+            <div class="button_container">
+                <a href="./project0/index.html" style="text-decoration: none; height: 100%;">
+                    <div class="press-button" style="height: 100%;">
+                        <h2><u>Project 0</u></h2>
+                        <h4>Becoming Friends with Your Camera</h4>
+                        <p class="sub">
+                            Take a fresh look at how cameras work by exploring how different focal lengths and viewpoints affect image formation
+                            and distortion.
+                        </p>
+                    </div>
+                </a>
+            </div>   
+            <div class="button_container">
+                <a href="./project1/index.html" style="text-decoration: none; height: 100%;">
+                    <div class="press-button" style="height: 100%;">
+                        <h2><u>Project 1</u></h2>
+                        <h4>Images of the Russian Empire</h4>
+                        <p class="sub">
+                            Reconstruct photographs from historic glass-plate negatives that contain three images of the same scene captured through 
+                            blue, green, and red filters. The goal is to align the three channels so that corresponding features match, producing a 
+                            coherent full-color image. I first implement single-scale alignment, testing pixel shifts to find the best overlap, 
+                            and then improve efficiency and accuracy with multi-scale pyramid alignment, from coarse to fine resolution.
+                        </p>
+                    </div>
+                </a>
+            </div> 
+            <div class="button_container">
+                <a href="./project2/index.html" style="text-decoration: none; height: 100%;">
+                    <div class="press-button" style="height: 100%;">
+                        <h2><u>Project 2</u></h2>
+                        <h4>Fun with Filters and Frequencies!</h4>
+                        <p class="sub">
+                            Explore fundamental 2D image processing by operating in both the spatial and frequency domains. 
+                            Part 1 focuses on mastering 2D convolutions and using them with various filters to achieve effects like edge detection and 
+                            Gaussian blurring. Part 2 applies filtering principles on advanced image manipulation, including image sharpening, 
+                            creating hybrid images by blending high- and low-frequency components, and achieving seamless image blending using 
+                            multiresolution techniques.
+                        </p>
+                    </div>
+                </a>
+            </div>
+            <div class="button_container">
+                <a href="./project3/index.html" style="text-decoration: none; height: 100%;">
+                    <div class="press-button" style="height: 100%;"
+                        onclick="window.location.href='./project3/index.html'">
+                        <h2><u>Project 3</u></h2>
+                        <h4>[Auto] Stitching Photo Mosaics</h4>
+                        <p class="sub">
+                            Create large composite images (panoramas) by stitching multiple photographs together.
+                            Part A requires manually selecting correspondent points between overlapping images, and calculating the homography matrix to warp 
+                            and composite them into a seamless mosaic. Part B automates this process to implement a technique for automatically finding 
+                            feature correspondences to eliminate the need for manual point selection, 
+                            thereby enabling fully automatic panorama generation.
+                        </p>
+                    </div>
+                </a>                    
+            </div>
+        </div>
+    </main>
+
 </body>
 </html>

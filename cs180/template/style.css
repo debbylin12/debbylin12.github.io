@@ -10,6 +10,7 @@
   --brand-3: #809d98;
   --brand-4: #9db5a6;
   --brand-5: #526961;
+  --brand-6: #a8a857;
   --tab-hover: #5f635c3c;
   --shadow: rgba(17, 24, 39, 0.131);
   --maxw: 1080px;
@@ -109,7 +110,7 @@ section.card {
   text-align: center;
 }
 .autumn h1 {
-  margin: 0 0 8px; 
+  margin: 0 0 15px; 
   font-size: 35px; 
   letter-spacing:.2px;
 }
@@ -117,6 +118,9 @@ section.card {
   margin: 0 0 8px; 
   font-size: 24px; 
   letter-spacing:.2px;
+}
+.autumn p {
+  font-size: 20px; 
 }
 .sticky_header{
   color: var(--title);
@@ -380,4 +384,49 @@ iframe {
   max-height: 88vh; 
   border-radius: 12px; 
   box-shadow: 0 20px 80px rgba(0,0,0,.5);
+}
+
+
+/* ===== Button ===== */
+.press-button {
+  --btn-color: white;         /* default base color */
+  --btn-shadow: var(--shadow);
+  --color-1: var(--subtitle);
+  --color-2: var(--brand-6);
+  
+  background: var(--btn-color); 
+  border: none;
+  padding: 25px 25px 15px;
+  font-size: 18px;
+  border-radius: 16px;
+  box-shadow: 3px 6px 3px var(--btn-shadow);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.press-button:hover {
+  transform: translateY(3px);
+  box-shadow: 1px 3px var(--btn-shadow);
+  
+}
+.press-button:active {
+  transform: translateY(5px);
+  box-shadow: 0 1px var(--btn-shadow);
+}
+.press-button h2 {
+  margin: 4px 0 10px;
+  font-size: 26px;
+  letter-spacing: .2px;
+  color: var(--color-1);
+}
+.press-button h4 {
+  margin: 4px 0 10px;
+  font-size: 20px;
+  letter-spacing: .2px;
+  color: var(--color-1);
+}
+.press-button:hover h2 {
+  color: var(--color-2);
+}
+.press-button:hover h4 {
+  color: var(--color-2);
 }
